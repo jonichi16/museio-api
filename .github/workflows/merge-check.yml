@@ -1,0 +1,37 @@
+name: merge-check
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main, dev]
+
+concurrency:
+  group: ci-${{ github.ref }}-group
+  cancel-in-progress: true
+
+jobs:
+  merge_notif:
+    if: github.event.pull_request.merged == true
+    name: merge_notif
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send Discord Merge Notification
+        run: |
+          curl -H "Content-Type: application/json" -X POST -d '{
+            "username": "Bob",
+            "embeds": [
+              {
+                "type": "rich",
+                "title": "PR #${{ github.event.pull_request.number }} on ${{ github.event.repository.name }} merged to ${{ github.event.pull_request.base.ref }}",
+                "description": "#${{ github.event.pull_request.number }}: ${{ github.event.pull_request.title }}\n\n${{ github.event.repository.name }}: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}",
+                "color": 3381555,
+                "author": {
+                  "name": "${{ github.actor }}",
+                  "url": "https://github.com/${{ github.actor }}",
+                  "icon_url": "https://github.com/${{ github.actor }}.png"
+                },
+                "url": "${{ github.event.pull_request.html_url }}"
+              }
+            ]
+          }' ${{ secrets.WEBHOOK_URL }}

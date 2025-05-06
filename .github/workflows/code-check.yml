@@ -1,0 +1,161 @@
+name: code-check
+
+on: [pull_request]
+
+concurrency:
+  group: ci-${{ github.ref }}-group
+  cancel-in-progress: true
+
+jobs:
+  notif_start:
+    name: start
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Send Discord in-progress notification
+        run: |
+          curl -H "Content-Type: application/json" -X POST -d '{
+            "username": "Bob",
+            "embeds": [
+              {
+                "type": "rich",
+                "title": "Code checking PR #${{ github.event.number }} on ${{ github.event.repository.name }}",
+                "description": "#${{ github.event.number }}: ${{ github.event.pull_request.title }}\n\n${{ github.event.repository.name }}: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}",
+                "color": 13408512,
+                "author": {
+                  "name": "${{ github.event.pull_request.user.login }}",
+                  "url": "${{ github.event.pull_request.user.html_url }}",
+                  "icon_url": "${{ github.event.pull_request.user.avatar_url }}"
+                },
+                "url": "${{ github.event.pull_request.html_url }}",
+                "fields": [
+                  {
+                    "name": "Description",
+                    "value": "${{ github.event.pull_request.user.login == 'dependabot[bot]' && github.event.pull_request.title || github.event.pull_request.body || '\n' }}",
+                    "inline": "false"
+                  },
+                  {
+                    "name": "Status",
+                    "value": "IN_PROGRESS",
+                    "inline": "true"
+                  },
+                  {
+                    "name": "Author",
+                    "value": "${{ github.event.pull_request.user.login }}",
+                    "inline": "true"
+                  },
+                  {
+                    "name": "Files Affected",
+                    "value": "${{ github.event.pull_request.changed_files }} files",
+                    "inline": "false"
+                  }
+                ]
+              }
+            ]
+          }' ${{ secrets.WEBHOOK_URL }}
+  
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn clean install -ntp --file pom.xml -DskipTests
+      - name: Run Tests
+        run: mvn test -ntp
+
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+      - name: Build with Maven
+        run: mvn clean install -ntp --file pom.xml -DskipTests
+      - name: Run linting
+        run: |
+          chmod +x ./ms
+          ./ms lint
+
+  notif_end:
+    name: end
+    runs-on: ubuntu-latest
+    needs: [test, lint]
+    if: always()
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set Job Status
+        id: job-status
+        run: |
+          FAILED_JOBS=""
+          if [[ "${{ needs.test.result }}" == "failure" ]]; then
+            FAILED_JOBS="${FAILED_JOBS}test\n"
+          fi
+          if [[ "${{ needs.lint.result }}" == "failure" ]]; then
+            FAILED_JOBS="${FAILED_JOBS}lint\n"
+          fi
+
+          COLOR=3381555
+          STATUS_TEXT="SUCCESS"
+
+          if [[ "${{ needs.test.result }}" == "failure" || \
+                "${{ needs.lint.result }}" == "failure" ]]; then
+            COLOR=13369344
+            STATUS_TEXT="FAILURE:\n$FAILED_JOBS"
+          fi
+
+          echo "failed_jobs=${FAILED_JOBS}" >> $GITHUB_ENV
+          echo "color=${COLOR}" >> $GITHUB_ENV
+          echo "status_text=${STATUS_TEXT}" >> $GITHUB_ENV
+      - name: Send Discord End Notification
+        run: |
+          curl -H "Content-Type: application/json" -X POST -d '{
+            "username": "Bob",
+            "embeds": [
+              {
+                "type": "rich",
+                "title": "PR #${{ github.event.number }} on ${{ github.event.repository.name }} passed code check!",
+                "description": "#${{ github.event.number }}: ${{ github.event.pull_request.title }}\n\n${{ github.event.repository.name }}: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}",
+                "color": ${{ env.color }},
+                "author": {
+                  "name": "${{ github.event.pull_request.user.login }}",
+                  "url": "${{ github.event.pull_request.user.html_url }}",
+                  "icon_url": "${{ github.event.pull_request.user.avatar_url }}"
+                },
+                "url": "${{ github.event.pull_request.html_url }}",
+                "fields": [
+                  {
+                    "name": "Description",
+                    "value": "${{ github.event.pull_request.user.login == 'dependabot[bot]' && github.event.pull_request.title || github.event.pull_request.body || '\n' }}",
+                    "inline": "false"
+                  },
+                  {
+                    "name": "Status",
+                    "value": "${{ env.status_text }}",
+                    "inline": "true"
+                  },
+                  {
+                    "name": "Author",
+                    "value": "${{ github.event.pull_request.user.login }}",
+                    "inline": "true"
+                  },
+                  {
+                    "name": "Files Affected",
+                    "value": "${{ github.event.pull_request.changed_files }} files",
+                    "inline": "false"
+                  }
+                ]
+              }
+            ]
+          }' ${{ secrets.WEBHOOK_URL }}

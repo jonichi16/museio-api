@@ -1,0 +1,57 @@
+name: "🐞 Bug Report"
+description: "Report a bug in Museio"
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "## 🐞 Bug Description\nA clear and concise description of what the bug is."
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: "🔄 Steps to Reproduce"
+      description: "Steps to reproduce the issue"
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "✅ Expected Behavior"
+      description: "What should happen instead?"
+      placeholder: "It should..."
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: "❌ Actual Behavior"
+      description: "What is actually happening?"
+      placeholder: "It actually..."
+
+  - type: input
+    id: environment
+    attributes:
+      label: "📱 Device & Environment"
+      description: "Mention the device, OS, and app version"
+      placeholder: "Android 13, Pixel 7, Museio v1.0"
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "📜 Logs (Optional)"
+      description: "Paste any relevant logs or errors"
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: "✅ Checklist"
+      options:
+        - label: "I have checked for existing issues"
+          required: true
+        - label: "I have provided necessary details"
+          required: true
