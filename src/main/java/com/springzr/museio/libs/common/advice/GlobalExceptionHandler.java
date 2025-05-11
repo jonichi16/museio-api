@@ -27,7 +27,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
      * Handles {@link MethodArgumentNotValidException} exceptions.
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
     ) {
         Map<String, List<String>> errorMap = new HashMap<>();
         e.getBindingResult().getFieldErrors().forEach(error -> {
-            logger.error("Validation Error: {}", error.getDefaultMessage());
+            LOGGER.error("Validation Error: {}", error.getDefaultMessage());
             String field = error.getField();
             String errorMessage = error.getDefaultMessage();
 
@@ -75,7 +75,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<MSResponse<Void>> handleMSException(
             MSException e
     ) {
-        logger.error("MSError: {}", e.getMessage());
+        LOGGER.error("MSError: {}", e.getMessage());
 
         MSResponse<Void> response = ErrorResponse.<Void>builder()
                 .code(e.getStatus().value())
@@ -101,7 +101,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<MSResponse<Void>> handleDataIntegrityViolationException(
             DataIntegrityViolationException e
     ) {
-        logger.error("Data Integrity Error: {}", e.getMessage());
+        LOGGER.error("Data Integrity Error: {}", e.getMessage());
 
         String message = e.getMessage();
         String duplicateField = message.substring(
@@ -132,7 +132,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<MSResponse<Void>> handleNoResourceFoundException(
             NoResourceFoundException e
     ) {
-        logger.error("No Resource Error: {}", e.getMessage());
+        LOGGER.error("No Resource Error: {}", e.getMessage());
 
         HttpStatus status = HttpStatus.NOT_FOUND;
 
@@ -156,7 +156,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<MSResponse<Void>> handleAll(Exception e) {
-        logger.error("Exception occurred: {}", e.getMessage());
+        LOGGER.error("Exception occurred: {}", e.getMessage());
 
 
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
