@@ -37,6 +37,7 @@
 		<spotbugs.version>4.9.3</spotbugs.version>
 		<maven-pmd-plugin.version>3.26.0</maven-pmd-plugin.version>
 		<commons-compress.version>1.27.1</commons-compress.version>
+		<jjwt-version>0.11.5</jjwt-version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -53,6 +54,27 @@
 		</dependency>
 
 		<!--	Security Dependencies	-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-oauth2-client</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>${jjwt-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>${jjwt-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>${jjwt-version}</version>
+		</dependency>
+
 		<!--	Database Dependencies	-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -120,6 +142,11 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
 			<version>${commons-compress.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 	</dependencies>
 
