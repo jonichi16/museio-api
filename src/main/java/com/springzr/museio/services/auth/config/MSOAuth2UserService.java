@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class MSCustomOAuth2UserService extends DefaultOAuth2UserService {
+public class MSOAuth2UserService extends DefaultOAuth2UserService {
 
     private final AccountRepository accountRepository;
 
