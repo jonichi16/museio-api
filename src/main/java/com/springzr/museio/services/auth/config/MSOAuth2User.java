@@ -7,6 +7,12 @@ import lombok.Builder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+/**
+ * Custom OAuth2User implementation that wraps the default user and links it to an Account entity.
+ *
+ * <p>Delegates standard OAuth2User behavior to the underlying delegate while providing the
+ * application's Account object for persistence and identification.</p>
+ */
 @Builder
 public record MSOAuth2User(OAuth2User delegate, Account account) implements OAuth2User {
 

@@ -43,17 +43,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         Optional<String> tokenOpt = extractTokenFromCookies(request);
 
-        if (tokenOpt.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (
+                tokenOpt.isPresent()
+                        && SecurityContextHolder.getContext().getAuthentication() == null
+        ) {
             String token = tokenOpt.get();
             try {
                 UUID accountId = jwtService.extractId(token);
                 if (jwtService.isTokenValid(token, accountId.toString())) {
                     authenticateUser(request, accountId);
                 }
-            } catch (JwtException e) {
-                LOGGER.warn("Invalid JWT token: {}", e.getMessage());
-            } catch (Exception e) {
-                LOGGER.error("Unexpected error while processing JWT token", e);
+            } catch (JwtException ex) {
+                LOGGER.warn("Invalid JWT token: {}", ex.getMessage());
+            } catch (Exception ex) {
+                LOGGER.error("Unexpected error while processing JWT token", ex);
             }
         }
 
@@ -61,7 +64,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     }
 
     private Optional<String> extractTokenFromCookies(HttpServletRequest request) {
-        if (request.getCookies() == null) return Optional.empty();
+        if (request.getCookies() == null) {
+            return Optional.empty();
+        }
 
         for (Cookie cookie : request.getCookies()) {
             if (ACCESS_TOKEN_COOKIE.equals(cookie.getName())) {

@@ -15,6 +15,12 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+/**
+ * Handles successful OAuth2 login by issuing a JWT and setting it as an HttpOnly cookie.
+ *
+ * <p>After authentication, a secure cookie containing the access token is set, and the user is
+ * redirected to a configured URI.</p>
+ */
 @Component
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
@@ -29,8 +35,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             HttpServletResponse response,
             Authentication authentication
     ) throws IOException, ServletException {
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        String accountId = oAuth2User.getName();
+        OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
+        String accountId = oauth2User.getName();
 
         String token = jwtService.generateToken(accountId);
 

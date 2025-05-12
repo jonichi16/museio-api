@@ -14,6 +14,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+/**
+ * Represents a user account in the system.
+ *
+ * <p>This entity stores basic account details including email, name, and audit timestamps.
+ */
 @Data
 @Builder
 @NoArgsConstructor

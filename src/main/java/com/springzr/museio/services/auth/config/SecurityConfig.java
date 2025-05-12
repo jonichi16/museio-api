@@ -10,15 +10,32 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Configures application security using Spring Security.
+ *
+ * <p>Includes JWT authentication and OAuth2 login handling.</p>
+ */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final MSOAuth2UserService msoAuth2UserService;
-    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2SuccessHandler oauth2SuccessHandler;
     private final JwtAuthFilter jwtAuthFilter;
 
+
+    /**
+     * Defines the security filter chain for HTTP requests.
+     *
+     * <p>Disables CSRF, sets stateless sessions, allows unauthenticated access to /auth/**
+     * endpoints, and requires authentication for all others. It also configures JWT filtering and
+     * OAuth2 login with custom user service and success handler.</p>
+     *
+     * @param http the HttpSecurity to configure
+     * @return the configured SecurityFilterChain
+     * @throws Exception if configuration fails
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -35,8 +52,7 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(msoAuth2UserService)
                         )
-                        .successHandler(oAuth2SuccessHandler)
-                );
+                        .successHandler(oauth2SuccessHandler));
         return http.build();
     }
 }
