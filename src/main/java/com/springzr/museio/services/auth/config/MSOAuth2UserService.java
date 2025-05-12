@@ -2,7 +2,6 @@ package com.springzr.museio.services.auth.config;
 
 import com.springzr.museio.services.auth.model.Account;
 import com.springzr.museio.services.auth.repository.AccountRepository;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;

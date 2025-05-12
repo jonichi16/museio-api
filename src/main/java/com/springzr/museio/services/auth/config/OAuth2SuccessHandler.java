@@ -1,16 +1,15 @@
 package com.springzr.museio.services.auth.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springzr.museio.libs.common.dto.MSResponse;
-import com.springzr.museio.libs.common.dto.SuccessResponse;
-import com.springzr.museio.services.auth.model.dto.AuthTokenResponse;
 import com.springzr.museio.services.auth.service.JwtService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -20,8 +19,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
+    @Value("${app.jwt.auth-redirect-uri}")
+    String authRedirectUri;
     private final JwtService jwtService;
-    private final ObjectMapper objectMapper;
+
     @Override
     public void onAuthenticationSuccess(
             HttpServletRequest request,
@@ -33,20 +34,15 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         String token = jwtService.generateToken(accountId);
 
-        AuthTokenResponse authTokenResponse = AuthTokenResponse.builder()
-                .accountId(accountId)
-                .accessToken(token)
+        ResponseCookie accessCookie = ResponseCookie.from("__accessToken", token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("Lax")
+                .maxAge(Duration.ofHours(1))
                 .build();
 
-        HttpStatus status = HttpStatus.OK;
-        MSResponse<AuthTokenResponse> responseBody = SuccessResponse.<AuthTokenResponse>builder()
-                .code(status.value())
-                .message("Authentication successful")
-                .data(authTokenResponse)
-                .build();
-
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
+        response.setHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+        response.sendRedirect(authRedirectUri);
     }
 }

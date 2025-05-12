@@ -4,9 +4,11 @@ import com.springzr.museio.services.auth.service.JwtService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -28,6 +30,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthFilter.class);
+    private static final String ACCESS_TOKEN_COOKIE = "__accessToken";
+
     private final JwtService jwtService;
 
     @Override
@@ -37,37 +41,42 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        final String header = request.getHeader("Authorization");
-        if (header == null || !header.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
+        Optional<String> tokenOpt = extractTokenFromCookies(request);
 
-        String token = header.substring(7);
-
-        try {
-            UUID accountId = jwtService.extractId(token);
-
-            if (accountId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (tokenOpt.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null) {
+            String token = tokenOpt.get();
+            try {
+                UUID accountId = jwtService.extractId(token);
                 if (jwtService.isTokenValid(token, accountId.toString())) {
-                    UsernamePasswordAuthenticationToken auth =
-                            new UsernamePasswordAuthenticationToken(
-                                    accountId,
-                                    null
-                            );
-
-                    auth.setDetails(
-                            new WebAuthenticationDetailsSource().buildDetails(request)
-                    );
-
-                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    authenticateUser(request, accountId);
                 }
+            } catch (JwtException e) {
+                LOGGER.warn("Invalid JWT token: {}", e.getMessage());
+            } catch (Exception e) {
+                LOGGER.error("Unexpected error while processing JWT token", e);
             }
-
-        } catch (JwtException ex) {
-            LOGGER.error("JwtException Error: {}", ex.getMessage());
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private Optional<String> extractTokenFromCookies(HttpServletRequest request) {
+        if (request.getCookies() == null) return Optional.empty();
+
+        for (Cookie cookie : request.getCookies()) {
+            if (ACCESS_TOKEN_COOKIE.equals(cookie.getName())) {
+                return Optional.ofNullable(cookie.getValue());
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    private void authenticateUser(HttpServletRequest request, UUID accountId) {
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                accountId, null, null
+        );
+        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(auth);
     }
 }

@@ -22,10 +22,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
 
-    @Value("${jwt.secret}")
+    @Value("${app.jwt.secret}")
     String secretKey;
 
-    @Value("${jwt.token-expiration}")
+    @Value("${app.jwt.token-expiration}")
     Integer tokenExpiration;
 
     @Override
