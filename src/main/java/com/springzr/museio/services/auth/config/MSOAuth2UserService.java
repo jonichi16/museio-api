@@ -27,7 +27,6 @@ public class MSOAuth2UserService extends DefaultOAuth2UserService {
         Account account = accountRepository.findByEmail(email)
                 .orElseGet(() -> {
                    Account newAccount = Account.builder()
-                           .id(UUID.randomUUID())
                            .email(email)
                            .name(name)
                            .build();

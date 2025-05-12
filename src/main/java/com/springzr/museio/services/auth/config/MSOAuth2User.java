@@ -3,22 +3,12 @@ package com.springzr.museio.services.auth.config;
 import com.springzr.museio.services.auth.model.Account;
 import java.util.Collection;
 import java.util.Map;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
-
-@Data
 @Builder
-@AllArgsConstructor
-@RequiredArgsConstructor
-public class MSOAuth2User implements OAuth2User {
-
-    private final OAuth2User delegate;
-    private final Account account;
+public record MSOAuth2User(OAuth2User delegate, Account account) implements OAuth2User {
 
     @Override
     public Map<String, Object> getAttributes() {
