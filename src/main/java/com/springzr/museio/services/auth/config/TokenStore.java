@@ -13,14 +13,14 @@ public class TokenStore {
 
     private static final long EXPIRATION_SECONDS = 60;
 
-    public void store(String state, String token) {
-        redisTemplate.opsForValue().set(state, token, Duration.ofSeconds(EXPIRATION_SECONDS));
+    public void store(String id, String token) {
+        redisTemplate.opsForValue().set(id, token, Duration.ofSeconds(EXPIRATION_SECONDS));
     }
 
-    public String consume(String state) {
-        String token = redisTemplate.opsForValue().get(state);
+    public String consume(String id) {
+        String token = redisTemplate.opsForValue().get(id);
         if (token != null) {
-            redisTemplate.delete(state);
+            redisTemplate.delete(id);
         }
         return token;
     }

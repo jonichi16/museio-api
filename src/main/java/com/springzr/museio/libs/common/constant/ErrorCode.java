@@ -14,5 +14,6 @@ public class ErrorCode {
     public static final String MISSING_REQUIRED = "ERR_004";
     public static final String UNAUTHORIZED = "ERR_005";
     public static final String NOT_ALLOWED = "ERR_006";
+    public static final String BAD_REQUEST = "ERR_400";
     public static final String INTERNAL_SERVER_ERROR = "ERR_500";
 }
