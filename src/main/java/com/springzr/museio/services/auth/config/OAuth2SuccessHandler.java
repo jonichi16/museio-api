@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +29,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     @Value("${app.jwt.auth-redirect-uri}")
     String authRedirectUri;
     private final JwtService jwtService;
+    private final TokenStore tokenStore;
 
     @Override
     public void onAuthenticationSuccess(
@@ -48,7 +50,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .maxAge(Duration.ofHours(1))
                 .build();
 
-        response.setHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-        response.sendRedirect(authRedirectUri);
+        String state = UUID.randomUUID().toString();
+        tokenStore.store(state, token);
+
+        response.sendRedirect(authRedirectUri + state);
+
+//        response.setHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
+//        response.sendRedirect(authRedirectUri);
     }
 }

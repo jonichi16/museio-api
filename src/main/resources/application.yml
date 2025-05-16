@@ -32,4 +32,4 @@ app:
   jwt:
     secret: ${JWT_SECRET}
     token-expiration: ${JWT_TOKEN_EXPIRATION:86400000} # 1 day in milliseconds
-    auth-redirect-uri: ${AUTH_REDIRECT_URI}
+    auth-redirect-uri: ${AUTH_REDIRECT_URI}/auth/callback?state=
