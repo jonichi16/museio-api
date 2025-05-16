@@ -14,46 +14,74 @@ jobs:
       - uses: actions/checkout@v4
       - name: Send Discord in-progress notification
         run: |
-          curl -H "Content-Type: application/json" -X POST -d '{
-            "username": "Bob",
-            "embeds": [
+          TITLE="${{ github.event.pull_request.title }}"
+          AUTHOR="${{ github.event.pull_request.user.login }}"
+          AVATAR="${{ github.event.pull_request.user.avatar_url }}"
+          AUTHOR_URL="${{ github.event.pull_request.user.html_url }}"
+          REPO="${{ github.event.repository.name }}"
+          PR_NUM="${{ github.event.number }}"
+          HEAD_REF="${{ github.event.pull_request.head.ref }}"
+          BASE_REF="${{ github.event.pull_request.base.ref }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          CHANGED_FILES="${{ github.event.pull_request.changed_files }}"
+
+          DESCRIPTION=""
+          if [[ "$AUTHOR" == "dependabot[bot]" ]]; then
+            DESCRIPTION="$TITLE"
+          else
+            DESCRIPTION="${{ github.event.pull_request.body }}"
+          fi
+
+          # Format JSON safely using jq
+          jq -n --arg title "Code checking PR #$PR_NUM on $REPO" \
+          --arg desc "#$PR_NUM: $TITLE" \
+          --arg branch_diff "$REPO: $HEAD_REF → $BASE_REF" \
+          --arg url "$PR_URL" \
+          --arg author "$AUTHOR" \
+          --arg avatar "$AVATAR" \
+          --arg author_url "$AUTHOR_URL" \
+          --arg description "$DESCRIPTION" \
+          --arg changed "$CHANGED_FILES files" \
+          '{
+            username: "Bob",
+            embeds: [
               {
-                "type": "rich",
-                "title": "Code checking PR #${{ github.event.number }} on ${{ github.event.repository.name }}",
-                "description": "#${{ github.event.number }}: ${{ github.event.pull_request.title }}\n\n${{ github.event.repository.name }}: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}",
-                "color": 13408512,
-                "author": {
-                  "name": "${{ github.event.pull_request.user.login }}",
-                  "url": "${{ github.event.pull_request.user.html_url }}",
-                  "icon_url": "${{ github.event.pull_request.user.avatar_url }}"
+                type: "rich",
+                title: $title,
+                description: "\($desc)\n\n\($branch_diff)",
+                url: $url,
+                color: 13408512,
+                author: {
+                  name: $author,
+                  url: $author_url,
+                  icon_url: $avatar
                 },
-                "url": "${{ github.event.pull_request.html_url }}",
-                "fields": [
+                fields: [
                   {
-                    "name": "Description",
-                    "value": "${{ github.event.pull_request.user.login == 'dependabot[bot]' && github.event.pull_request.title || github.event.pull_request.body || '\n' }}",
-                    "inline": "false"
+                    name: "Description",
+                    value: $description,
+                    inline: false
                   },
                   {
-                    "name": "Status",
-                    "value": "IN_PROGRESS",
-                    "inline": "true"
+                    name: "Status",
+                    value: "IN_PROGRESS",
+                    inline: true
                   },
                   {
-                    "name": "Author",
-                    "value": "${{ github.event.pull_request.user.login }}",
-                    "inline": "true"
+                    name: "Author",
+                    value: $author,
+                    inline: true
                   },
                   {
-                    "name": "Files Affected",
-                    "value": "${{ github.event.pull_request.changed_files }} files",
-                    "inline": "false"
+                    name: "Files Affected",
+                    value: $changed,
+                    inline: false
                   }
                 ]
               }
             ]
-          }' ${{ secrets.WEBHOOK_URL }}
-  
+          }' | curl -H "Content-Type: application/json" -X POST -d @- ${{ secrets.WEBHOOK_URL }}
+
   test:
     name: test
     runs-on: ubuntu-latest
@@ -62,8 +90,8 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: "21"
+          distribution: "temurin"
           cache: maven
       - name: Build with Maven
         run: mvn clean install -ntp --file pom.xml -DskipTests
@@ -78,8 +106,8 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          java-version: "21"
+          distribution: "temurin"
           cache: maven
       - name: Build with Maven
         run: mvn clean install -ntp --file pom.xml -DskipTests
@@ -107,55 +135,90 @@ jobs:
           fi
 
           COLOR=3381555
+          TITLE="PR #${{ github.event.number }} on ${{ github.event.repository.name }} passed code check!"
           STATUS_TEXT="SUCCESS"
 
-          if [[ "${{ needs.test.result }}" == "failure" || \
-                "${{ needs.lint.result }}" == "failure" ]]; then
+          if [[ -n "$FAILED_JOBS" ]]; then
             COLOR=13369344
-            STATUS_TEXT="FAILURE:\n$FAILED_JOBS"
+            TITLE="PR #${{ github.event.number }} on ${{ github.event.repository.name }} hit a snag!"
+            STATUS_TEXT="FAILURE:\n${FAILED_JOBS}"
           fi
 
-          echo "failed_jobs=${FAILED_JOBS}" >> $GITHUB_ENV
+          echo "title=$TITLE" >> $GITHUB_ENV
           echo "color=${COLOR}" >> $GITHUB_ENV
-          echo "status_text=${STATUS_TEXT}" >> $GITHUB_ENV
+          echo "status_text=$STATUS_TEXT" >> $GITHUB_ENV
+
       - name: Send Discord End Notification
         run: |
-          curl -H "Content-Type: application/json" -X POST -d '{
-            "username": "Bob",
-            "embeds": [
-              {
-                "type": "rich",
-                "title": "PR #${{ github.event.number }} on ${{ github.event.repository.name }} passed code check!",
-                "description": "#${{ github.event.number }}: ${{ github.event.pull_request.title }}\n\n${{ github.event.repository.name }}: ${{ github.event.pull_request.head.ref }} → ${{ github.event.pull_request.base.ref }}",
-                "color": ${{ env.color }},
-                "author": {
-                  "name": "${{ github.event.pull_request.user.login }}",
-                  "url": "${{ github.event.pull_request.user.html_url }}",
-                  "icon_url": "${{ github.event.pull_request.user.avatar_url }}"
-                },
-                "url": "${{ github.event.pull_request.html_url }}",
-                "fields": [
-                  {
-                    "name": "Description",
-                    "value": "${{ github.event.pull_request.user.login == 'dependabot[bot]' && github.event.pull_request.title || github.event.pull_request.body || '\n' }}",
-                    "inline": "false"
+          TITLE="${{ env.title }}"
+          TITLEDESC="${{ github.event.pull_request.title }}"
+          AUTHOR="${{ github.event.pull_request.user.login }}"
+          AVATAR="${{ github.event.pull_request.user.avatar_url }}"
+          AUTHOR_URL="${{ github.event.pull_request.user.html_url }}"
+          REPO="${{ github.event.repository.name }}"
+          PR_NUM="${{ github.event.number }}"
+          HEAD_REF="${{ github.event.pull_request.head.ref }}"
+          BASE_REF="${{ github.event.pull_request.base.ref }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          CHANGED_FILES="${{ github.event.pull_request.changed_files }}"
+          COLOR="${{ env.color }}"
+          STATUS_TEXT="${{ env.status_text }}"
+
+          DESCRIPTION=""
+          if [[ "$AUTHOR" == "dependabot[bot]" ]]; then
+            DESCRIPTION="$TITLE"
+          else
+            DESCRIPTION="${{ github.event.pull_request.body }}"
+          fi
+
+          jq -n \
+            --arg title "$TITLE" \
+            --arg desc "#$PR_NUM: $TITLEDESC" \
+            --arg branch_diff "$REPO: $HEAD_REF → $BASE_REF" \
+            --arg url "$PR_URL" \
+            --arg author "$AUTHOR" \
+            --arg avatar "$AVATAR" \
+            --arg author_url "$AUTHOR_URL" \
+            --arg description "$DESCRIPTION" \
+            --arg changed "$CHANGED_FILES files" \
+            --arg status "$(printf '%b' "$STATUS_TEXT")" \
+            --argjson color "$COLOR" \
+            '{
+              username: "Bob",
+              embeds: [
+                {
+                  type: "rich",
+                  title: $title,
+                  description: "\($desc)\n\n\($branch_diff)",
+                  url: $url,
+                  color: $color,
+                  author: {
+                    name: $author,
+                    url: $author_url,
+                    icon_url: $avatar
                   },
-                  {
-                    "name": "Status",
-                    "value": "${{ env.status_text }}",
-                    "inline": "true"
-                  },
-                  {
-                    "name": "Author",
-                    "value": "${{ github.event.pull_request.user.login }}",
-                    "inline": "true"
-                  },
-                  {
-                    "name": "Files Affected",
-                    "value": "${{ github.event.pull_request.changed_files }} files",
-                    "inline": "false"
-                  }
-                ]
-              }
-            ]
-          }' ${{ secrets.WEBHOOK_URL }}
+                  fields: [
+                    {
+                      name: "Description",
+                      value: $description,
+                      inline: false
+                    },
+                    {
+                      name: "Status",
+                      value: $status,
+                      inline: true
+                    },
+                    {
+                      name: "Author",
+                      value: $author,
+                      inline: true
+                    },
+                    {
+                      name: "Files Affected",
+                      value: $changed,
+                      inline: false
+                    }
+                  ]
+                }
+              ]
+            }' | curl -H "Content-Type: application/json" -X POST -d @- ${{ secrets.WEBHOOK_URL }}
