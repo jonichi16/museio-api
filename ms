@@ -71,6 +71,7 @@ case "$1" in
         docker compose --project-name museio down
         echo "Removing unused Docker images..."
         docker image prune -f
+        docker volume prune -f
         echo "✅  All services stopped and cleanup completed."
         ;;
     *)

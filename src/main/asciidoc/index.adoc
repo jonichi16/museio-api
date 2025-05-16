@@ -1,0 +1,25 @@
+= Museio API Documentation
+:toc: left
+
+=== Token
+`POST /api/auth/token`
+
+Retrieve token after successful Google OAuth2 login.
+
+==== Request
+
+include::{snippets}/tokenSuccess/request-body.adoc[]
+
+==== Success Response
+
+include::{snippets}/tokenSuccess/response-body.adoc[]
+
+==== Error Responses
+
+* Bad Request:
+include::{snippets}/tokenBadRequest/response-body.adoc[]
+
+* Unauthorized:
+include::{snippets}/tokenUnauthorized/response-body.adoc[]
+
+'''

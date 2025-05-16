@@ -18,6 +18,19 @@ services:
       timeout: 5s
       retries: 3
 
+  redis:
+    image: redis:8
+    container_name: redis-cache
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
 networks:
   backend:
     name: backend
