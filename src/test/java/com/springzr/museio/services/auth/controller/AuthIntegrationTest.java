@@ -1,12 +1,31 @@
 package com.springzr.museio.services.auth.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springzr.museio.services.auth.config.MSOAuth2UserService;
+import com.springzr.museio.services.auth.config.OAuth2SuccessHandler;
 import com.springzr.museio.services.auth.config.SecurityConfig;
+import com.springzr.museio.services.auth.config.TokenStore;
+import com.springzr.museio.services.auth.model.request.TokenRequest;
+import com.springzr.museio.services.auth.repository.AccountRepository;
+import com.springzr.museio.services.auth.service.JwtService;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @WebMvcTest
 @Import(SecurityConfig.class)
@@ -16,4 +35,42 @@ public class AuthIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private ObjectMapper objectMapper;
+    @MockBean
+    private AccountRepository accountRepository;
+    @MockBean
+    private JwtService jwtService;
+    @MockBean
+    private MSOAuth2UserService msOAuth2UserService;
+    @MockBean
+    private OAuth2SuccessHandler oAuth2SuccessHandler;
+    @MockBean
+    private TokenStore tokenStore;
+
+    @Test
+    public void getToken_shouldReturn200Ok() throws Exception {
+        // given
+        String id = "sampleId";
+        String accessToken = "accessToken";
+        TokenRequest tokenRequest = TokenRequest.builder()
+                .id(id)
+                .build();
+
+        // when
+        when(tokenStore.consume(id)).thenReturn(accessToken);
+
+        // then
+        mockMvc.perform(post("/api/auth/token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(tokenRequest)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andDo(
+                        document("tokenSuccess",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint())
+                        )
+                );
+    }
 }

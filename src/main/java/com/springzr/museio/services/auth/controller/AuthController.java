@@ -1,6 +1,8 @@
 package com.springzr.museio.services.auth.controller;
 
 import com.springzr.museio.services.auth.config.TokenStore;
+import com.springzr.museio.services.auth.model.request.TokenRequest;
+import jakarta.validation.Valid;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,8 +20,8 @@ public class AuthController {
     private final TokenStore tokenStore;
 
     @PostMapping("/token")
-    public ResponseEntity<?> getToken(@RequestBody Map<String, String> body) {
-        String state = body.get("state");
+    public ResponseEntity<?> getToken(@RequestBody @Valid TokenRequest request) {
+        String state = request.id();
         if (state == null) return ResponseEntity.badRequest().build();
 
         String token = tokenStore.consume(state);
