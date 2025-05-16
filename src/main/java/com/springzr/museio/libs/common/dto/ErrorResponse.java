@@ -22,10 +22,10 @@ public class ErrorResponse<T> extends MSResponse<T> {
      * Constructs an {@code ErrorResponse} with the given HTTP status code, message,
      * error code, and error details.
      *
-     * @param code the HTTP status code representing the error
-     * @param message a descriptive message about the error
+     * @param code      the HTTP status code representing the error
+     * @param message   a descriptive message about the error
      * @param errorCode a code representing the type of error
-     * @param error the details of the error payload
+     * @param error     the details of the error payload
      */
     public ErrorResponse(int code, String message, String errorCode, T error) {
         super(false, code, message);
@@ -121,5 +121,17 @@ public class ErrorResponse<T> extends MSResponse<T> {
         public ErrorResponse<T> build() {
             return new ErrorResponse<>(code, message, errorCode, error);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "ErrorResponse{"
+                + "success=" + isSuccess()
+                + ", code=" + getCode()
+                + ", message=\"" + getMessage() + '"'
+                + ", errorCode=\"" + errorCode + '"'
+                + ", error=" + error
+                + ", timestamp=" + getTimestamp()
+                + '}';
     }
 }

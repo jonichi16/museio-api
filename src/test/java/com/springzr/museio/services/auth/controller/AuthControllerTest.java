@@ -19,7 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-public class AuthControllerTest {
+class AuthControllerTest {
 
     @Mock
     private AuthService authService;
@@ -27,7 +27,7 @@ public class AuthControllerTest {
     private AuthController authController;
 
     @Test
-    public void getToken_shouldCallAuthServiceOnce() throws Exception {
+    void getToken_shouldCallAuthServiceOnce() {
         // given
         String id = "sampleId";
         TokenRequest tokenRequest = TokenRequest.builder()
@@ -42,7 +42,7 @@ public class AuthControllerTest {
     }
     
     @Test
-    public void getToken_shouldReturnCorrectResponseBody() throws Exception {
+    void getToken_shouldReturnCorrectResponseBody() {
         // given
         String id = "sampleId";
         String accessToken = "accessToken";

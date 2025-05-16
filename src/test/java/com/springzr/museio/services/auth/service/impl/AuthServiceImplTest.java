@@ -21,7 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-public class AuthServiceImplTest {
+class AuthServiceImplTest {
 
     @Mock
     private TokenStore tokenStore;
@@ -29,7 +29,7 @@ public class AuthServiceImplTest {
     private AuthServiceImpl authServiceImpl;
 
     @Test
-    public void getToken_shouldReturnTokenResponse() throws Exception {
+    void getToken_shouldReturnTokenResponse() {
         // given
         String id = "sampleId";
         String accessToken = "accessToken";
@@ -48,7 +48,7 @@ public class AuthServiceImplTest {
     }
 
     @Test
-    public void getToken_whenIdIsNull_shouldThrow400BadRequest() throws Exception {
+    void getToken_whenIdIsNull_shouldThrow400BadRequest() {
         // given
         TokenRequest tokenRequest = TokenRequest.builder()
                 .build();
@@ -64,7 +64,7 @@ public class AuthServiceImplTest {
     }
 
     @Test
-    public void getToken_whenTokenStoreReturnNull_shouldThrow400Unauthorized() throws Exception {
+    void getToken_whenTokenStoreReturnNull_shouldThrow400Unauthorized() {
         // given
         String id = "sampleId";
         TokenRequest tokenRequest = TokenRequest.builder()

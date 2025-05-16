@@ -1,6 +1,5 @@
 package com.springzr.museio.services.auth.controller;
 
-import com.springzr.museio.libs.common.advice.GlobalExceptionHandler;
 import com.springzr.museio.libs.common.dto.MSResponse;
 import com.springzr.museio.libs.common.dto.SuccessResponse;
 import com.springzr.museio.services.auth.model.request.TokenRequest;
@@ -39,6 +38,7 @@ public class AuthController {
     public ResponseEntity<MSResponse<TokenResponse>> getToken(
             @RequestBody @Valid TokenRequest request
     ) {
+        LOGGER.info("Request: id={}", request.id());
 
         TokenResponse token = authService.getToken(request);
         HttpStatus status = HttpStatus.OK;

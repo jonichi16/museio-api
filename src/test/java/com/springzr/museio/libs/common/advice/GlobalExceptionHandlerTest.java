@@ -21,13 +21,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @ActiveProfiles("test")
-public class GlobalExceptionHandlerTest {
+class GlobalExceptionHandlerTest {
 
     private final GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
 
 
     @Test
-    public void handleNotValidException_shouldReturnBadRequestError() throws Exception {
+    void handleNotValidException_shouldReturnBadRequestError() {
         // given
         FieldError fieldError1 = new FieldError(
                 "TestObject",
@@ -65,7 +65,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void handleMSException_shouldReturnBadRequestError() throws Exception {
+    void handleMSException_shouldReturnBadRequestError() {
         // given
         MSException exception = new MSException(
                 "Object already exists",
@@ -88,7 +88,7 @@ public class GlobalExceptionHandlerTest {
 
 
     @Test
-    public void handleDataIntegrityViolationException_shouldReturnBadRequestError() throws Exception {
+    void handleDataIntegrityViolationException_shouldReturnBadRequestError() {
         // given
         DataIntegrityViolationException exception = new DataIntegrityViolationException(
                 "Detail: Key (email)=(test@mail.com) already exists."
@@ -107,7 +107,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void handleNoResourceFoundException_shouldReturn404NotFoundError() throws Exception {
+    void handleNoResourceFoundException_shouldReturn404NotFoundError() {
         // given
         NoResourceFoundException exception = new NoResourceFoundException(HttpMethod.POST, "/sample/path");
 
@@ -124,7 +124,7 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
-    public void handleAll_shouldReturn500InternalServerError() throws Exception {
+    void handleAll_shouldReturn500InternalServerError() {
         // given
         Exception exception = new RuntimeException("Something went wrong");
 

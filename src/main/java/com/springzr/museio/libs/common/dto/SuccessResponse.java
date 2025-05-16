@@ -19,9 +19,9 @@ public class SuccessResponse<T> extends MSResponse<T> {
     /**
      * Constructs a {@code SuccessResponse} with the given HTTP status code, message, and data.
      *
-     * @param code the HTTP status code representing the success
+     * @param code    the HTTP status code representing the success
      * @param message a descriptive message about the success
-     * @param data the data payload of the response
+     * @param data    the data payload of the response
      */
     public SuccessResponse(int code, String message, T data) {
         super(true, code, message);
@@ -104,5 +104,16 @@ public class SuccessResponse<T> extends MSResponse<T> {
         public SuccessResponse<T> build() {
             return new SuccessResponse<>(code, message, data);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "SuccessResponse{"
+                + "success=" + isSuccess()
+                + ", code=" + getCode()
+                + ", message=\"" + getMessage() + '"'
+                + ", data=" + data
+                + ", timestamp=" + getTimestamp()
+                + '}';
     }
 }

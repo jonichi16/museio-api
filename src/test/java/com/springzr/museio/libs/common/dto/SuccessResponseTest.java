@@ -6,9 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
-public class SuccessResponseTest {
+class SuccessResponseTest {
     @Test
-    public void builder_shouldCreateTheCorrectObject() throws Exception {
+    void builder_shouldCreateTheCorrectObject() {
         // given
         int code = 200;
         String message = "Success";
@@ -30,7 +30,7 @@ public class SuccessResponseTest {
     }
 
     @Test
-    public void builder_shouldHaveNullErrorAndErrorCode() throws Exception {
+    void builder_shouldHaveNullErrorAndErrorCode() {
         // given
         int code = 200;
         String message = "Success";
@@ -49,7 +49,7 @@ public class SuccessResponseTest {
     }
 
     @Test
-    public void builder_shouldNotHaveErrorAndErrorCodeFields() throws Exception {
+    void builder_shouldNotHaveErrorAndErrorCodeFields() throws Exception {
         // given
         int code = 200;
         String message = "Success";
@@ -69,5 +69,23 @@ public class SuccessResponseTest {
         assertThat(json).contains("data");
         assertThat(json).doesNotContain("error");
         assertThat(json).doesNotContain("errorCode");
+    }
+
+    @Test
+    void testSuccessResponseToString() {
+        SuccessResponse<String> response = new SuccessResponse<>(
+                200,
+                "Operation successful",
+                "Hello, World!"
+        );
+
+        String toString = response.toString();
+
+        assertThat(toString)
+                .startsWith("SuccessResponse{")
+                .contains("success=true")
+                .contains("code=200")
+                .contains("message=\"Operation successful\"")
+                .contains("data=Hello, World!");
     }
 }

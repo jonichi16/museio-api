@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
-public class JwtServiceImplTest {
+class JwtServiceImplTest {
 
     private JwtServiceImpl jwtServiceImpl;
     private final UUID accountId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
@@ -26,7 +26,7 @@ public class JwtServiceImplTest {
     }
 
     @Test
-    public void generateToken_shouldGenerateWithUser() throws Exception {
+    void generateToken_shouldGenerateWithUser() {
         // given
         Account account = Account.builder()
                 .id(accountId)
@@ -43,7 +43,7 @@ public class JwtServiceImplTest {
     }
 
     @Test
-    public void isTokenExpired_shouldCheckIfTokenIsExpired() throws Exception {
+    void isTokenExpired_shouldCheckIfTokenIsExpired() {
         // given
         Account account = Account.builder()
                 .id(accountId)
@@ -62,7 +62,7 @@ public class JwtServiceImplTest {
     }
 
     @Test
-    public void isTokenValid_shouldCheckIfTokenIsValid() throws Exception {
+    void isTokenValid_shouldCheckIfTokenIsValid() {
         // given
         Account account = Account.builder()
                 .id(accountId)
@@ -76,7 +76,7 @@ public class JwtServiceImplTest {
     }
 
     @Test
-    public void isTokenValid_shouldCheckIfTokenIsInvalid() throws Exception {
+    void isTokenValid_shouldCheckIfTokenIsInvalid() {
         // given
         Account account = Account.builder()
                 .id(accountId)

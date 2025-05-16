@@ -35,7 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(SecurityConfig.class)
 @ActiveProfiles("test")
 @AutoConfigureRestDocs(outputDir = "target/generated-snippets")
-public class AuthIntegrationTest {
+class AuthIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -53,7 +53,7 @@ public class AuthIntegrationTest {
     private AuthService authService;
 
     @Test
-    public void getToken_shouldReturn200Ok() throws Exception {
+    void getToken_shouldReturn200Ok() throws Exception {
         // given
         String id = "81470020-4855-47b9-b8f4-259b337e97b0";
         String accessToken = "accessToken";
@@ -84,7 +84,7 @@ public class AuthIntegrationTest {
     }
 
     @Test
-    public void getToken_shouldReturn400BadRequest() throws Exception {
+    void getToken_shouldReturn400BadRequest() throws Exception {
         // given
         String invalidRequest = "{ }";
 
@@ -105,7 +105,7 @@ public class AuthIntegrationTest {
     }
 
     @Test
-    public void getToken_shouldReturn401Unauthorized() throws Exception {
+    void getToken_shouldReturn401Unauthorized() throws Exception {
         // given
         String id = "81470020-4855-47b9-b8f4-259b337e97b0";
         TokenRequest tokenRequest = TokenRequest.builder()

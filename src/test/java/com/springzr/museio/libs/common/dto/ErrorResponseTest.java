@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.context.ActiveProfiles;
 
 @ActiveProfiles("test")
-public class ErrorResponseTest {
+class ErrorResponseTest {
 
     @Test
-    public void builder_shouldCreateTheCorrectObject() throws Exception {
+    void builder_shouldCreateTheCorrectObject() {
         // given
         int code = 400;
         String message = "Error";
@@ -34,7 +34,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void builder_shouldHaveNullValueForData() throws Exception {
+    void builder_shouldHaveNullValueForData() {
         // given
         int code = 400;
         String message = "Error";
@@ -54,7 +54,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void builder_shouldNotHaveDataField() throws Exception {
+    void builder_shouldNotHaveDataField() throws Exception {
         // given
         int code = 400;
         String message = "Error";
@@ -76,6 +76,26 @@ public class ErrorResponseTest {
         assertThat(json).contains("error");
         assertThat(json).contains("errorCode");
         assertThat(json).doesNotContain("data");
+    }
+
+    @Test
+    void testErrorResponseToString() {
+        ErrorResponse<String> response = new ErrorResponse<>(
+                400,
+                "Bad Request",
+                "ERR400",
+                "Invalid ID"
+        );
+
+        String toString = response.toString();
+
+        assertThat(toString)
+                .startsWith("ErrorResponse{")
+                .contains("success=false")
+                .contains("code=400")
+                .contains("message=\"Bad Request\"")
+                .contains("errorCode=\"ERR400\"")
+                .contains("error=Invalid ID");
     }
 
 }
