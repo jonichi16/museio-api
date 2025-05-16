@@ -8,6 +8,10 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+  redis:
+    host: ${REDISHOST}
+    port: ${REDISPORT}
+    password: ${REDISPASSWORD}
   jpa:
     hibernate:
       ddl-auto: none

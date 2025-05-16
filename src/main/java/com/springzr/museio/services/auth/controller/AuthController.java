@@ -17,16 +17,15 @@ public class AuthController {
 
     private final TokenStore tokenStore;
 
-    @PostMapping("/exchange")
-    public ResponseEntity<?> exchangeToken(@RequestBody Map<String, String> body) {
+    @PostMapping("/token")
+    public ResponseEntity<?> getToken(@RequestBody Map<String, String> body) {
         String state = body.get("state");
         if (state == null) return ResponseEntity.badRequest().build();
 
         String token = tokenStore.consume(state);
         if (token == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        return ResponseEntity.ok(Map.of("token", token));
-
+        return ResponseEntity.ok(Map.of("accessToken", token, "bearerType", "Bearer"));
     }
 
 }

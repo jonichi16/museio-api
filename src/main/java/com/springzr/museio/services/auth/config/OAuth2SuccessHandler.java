@@ -9,7 +9,6 @@ import java.time.Duration;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -42,20 +41,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
         String token = jwtService.generateToken(accountId);
 
-        ResponseCookie accessCookie = ResponseCookie.from("__accessToken", token)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .sameSite("Lax")
-                .maxAge(Duration.ofHours(1))
-                .build();
-
         String state = UUID.randomUUID().toString();
         tokenStore.store(state, token);
 
         response.sendRedirect(authRedirectUri + state);
-
-//        response.setHeader(HttpHeaders.SET_COOKIE, accessCookie.toString());
-//        response.sendRedirect(authRedirectUri);
     }
 }
