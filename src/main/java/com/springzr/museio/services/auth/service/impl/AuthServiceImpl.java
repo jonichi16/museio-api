@@ -10,6 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service class that implements {@link AuthService}.
+ *
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {

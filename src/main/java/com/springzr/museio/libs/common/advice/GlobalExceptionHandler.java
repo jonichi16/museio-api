@@ -158,7 +158,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<MSResponse<Void>> handleAll(Exception e) {
         LOGGER.error("Exception occurred: {}", e.getMessage());
 
-
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         MSResponse<Void> response = ErrorResponse.<Void>builder()
                 .code(status.value())

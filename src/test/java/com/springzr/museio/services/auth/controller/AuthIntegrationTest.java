@@ -1,6 +1,8 @@
 package com.springzr.museio.services.auth.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springzr.museio.libs.common.constant.ErrorCode;
+import com.springzr.museio.libs.common.exception.MSException;
 import com.springzr.museio.services.auth.config.MSOAuth2UserService;
 import com.springzr.museio.services.auth.config.OAuth2SuccessHandler;
 import com.springzr.museio.services.auth.config.SecurityConfig;
@@ -16,6 +18,7 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
@@ -52,7 +55,7 @@ public class AuthIntegrationTest {
     @Test
     public void getToken_shouldReturn200Ok() throws Exception {
         // given
-        String id = "sampleId";
+        String id = "81470020-4855-47b9-b8f4-259b337e97b0";
         String accessToken = "accessToken";
         TokenRequest tokenRequest = TokenRequest.builder()
                 .id(id)
@@ -74,6 +77,59 @@ public class AuthIntegrationTest {
                 .andExpect(status().isOk())
                 .andDo(
                         document("tokenSuccess",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint())
+                        )
+                );
+    }
+
+    @Test
+    public void getToken_shouldReturn400BadRequest() throws Exception {
+        // given
+        String invalidRequest = "{ }";
+
+        // when
+
+        // then
+        mockMvc.perform(post("/api/auth/token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(invalidRequest))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andDo(
+                        document("tokenBadRequest",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint())
+                        )
+                );
+    }
+
+    @Test
+    public void getToken_shouldReturn401Unauthorized() throws Exception {
+        // given
+        String id = "81470020-4855-47b9-b8f4-259b337e97b0";
+        TokenRequest tokenRequest = TokenRequest.builder()
+                .id(id)
+                .build();
+
+        // when
+        when(authService.getToken(tokenRequest))
+                .thenThrow(
+                        new MSException(
+                                "Unauthorized",
+                                HttpStatus.UNAUTHORIZED,
+                                ErrorCode.UNAUTHORIZED
+                        )
+                );
+
+        // then
+        mockMvc.perform(post("/api/auth/token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(tokenRequest)))
+                .andDo(print())
+                .andExpect(status().isUnauthorized())
+                .andDo(
+                        document("tokenUnauthorized",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint())
                         )
