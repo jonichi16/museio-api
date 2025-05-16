@@ -4,9 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springzr.museio.services.auth.config.MSOAuth2UserService;
 import com.springzr.museio.services.auth.config.OAuth2SuccessHandler;
 import com.springzr.museio.services.auth.config.SecurityConfig;
-import com.springzr.museio.services.auth.config.TokenStore;
 import com.springzr.museio.services.auth.model.request.TokenRequest;
+import com.springzr.museio.services.auth.model.response.TokenResponse;
 import com.springzr.museio.services.auth.repository.AccountRepository;
+import com.springzr.museio.services.auth.service.AuthService;
 import com.springzr.museio.services.auth.service.JwtService;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.when;
@@ -46,7 +47,7 @@ public class AuthIntegrationTest {
     @MockBean
     private OAuth2SuccessHandler oAuth2SuccessHandler;
     @MockBean
-    private TokenStore tokenStore;
+    private AuthService authService;
 
     @Test
     public void getToken_shouldReturn200Ok() throws Exception {
@@ -57,8 +58,13 @@ public class AuthIntegrationTest {
                 .id(id)
                 .build();
 
+        TokenResponse tokenResponse = TokenResponse.builder()
+                .accessToken(accessToken)
+                .bearerType("Bearer")
+                .build();
+
         // when
-        when(tokenStore.consume(id)).thenReturn(accessToken);
+        when(authService.getToken(tokenRequest)).thenReturn(tokenResponse);
 
         // then
         mockMvc.perform(post("/api/auth/token")

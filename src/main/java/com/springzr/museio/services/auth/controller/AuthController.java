@@ -1,9 +1,11 @@
 package com.springzr.museio.services.auth.controller;
 
-import com.springzr.museio.services.auth.config.TokenStore;
+import com.springzr.museio.libs.common.dto.MSResponse;
+import com.springzr.museio.libs.common.dto.SuccessResponse;
 import com.springzr.museio.services.auth.model.request.TokenRequest;
+import com.springzr.museio.services.auth.model.response.TokenResponse;
+import com.springzr.museio.services.auth.service.AuthService;
 import jakarta.validation.Valid;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,17 +19,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final TokenStore tokenStore;
+    private final AuthService authService;
 
     @PostMapping("/token")
-    public ResponseEntity<?> getToken(@RequestBody @Valid TokenRequest request) {
-        String state = request.id();
-        if (state == null) return ResponseEntity.badRequest().build();
+    public ResponseEntity<MSResponse<TokenResponse>> getToken(@RequestBody @Valid TokenRequest request) {
 
-        String token = tokenStore.consume(state);
-        if (token == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        TokenResponse token = authService.getToken(request);
+        HttpStatus status = HttpStatus.OK;
+        MSResponse<TokenResponse> response = SuccessResponse.<TokenResponse>builder()
+                .code(status.value())
+                .message("Authentication successful")
+                .data(token)
+                .build();
 
-        return ResponseEntity.ok(Map.of("accessToken", token, "bearerType", "Bearer"));
+        return ResponseEntity.status(status).body(response);
     }
 
 }
