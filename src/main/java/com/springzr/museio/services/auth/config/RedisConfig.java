@@ -15,11 +15,11 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 @Configuration
 public class RedisConfig {
 
-    @Value("${spring.redis.host}")
+    @Value("${spring.data.redis.host}")
     String redisHostName;
-    @Value("${spring.redis.port}")
+    @Value("${spring.data.redis.port}")
     String redisPort;
-    @Value("${spring.redis.password}")
+    @Value("${spring.data.redis.password}")
     String redisPassword;
 
     /**
