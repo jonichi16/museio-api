@@ -10,7 +10,6 @@ spring:
     driver-class-name: org.postgresql.Driver
   data:
     redis:
-      url: ${REDIS_URL}
       host: ${REDISHOST}
       port: ${REDISPORT}
       password: ${REDISPASSWORD}
@@ -34,12 +33,6 @@ spring:
 server:
   error:
     include-message: always
-
-management:
-  endpoint:
-    health:
-      show-details: always
-
 app:
   jwt:
     secret: ${JWT_SECRET}
