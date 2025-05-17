@@ -1,4 +1,0 @@
-databaseChangeLog:
-  - includeAll:
-      path: changelog-1
-      relativeToChangelogFile: true

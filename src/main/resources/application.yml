@@ -8,6 +8,10 @@ spring:
     username: ${DB_USER}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
+  redis:
+    host: ${REDISHOST}
+    port: ${REDISPORT}
+    password: ${REDISPASSWORD}
   jpa:
     hibernate:
       ddl-auto: none
@@ -17,9 +21,19 @@ spring:
   jackson:
     deserialization:
       fail-on-unknown-properties: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope: profile, email
 server:
   error:
     include-message: always
-jwt:
-  secret: ${JWT_SECRET}
-  token-expiration: ${JWT_TOKEN_EXPIRATION:86400000} # 1 day in milliseconds
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    token-expiration: ${JWT_TOKEN_EXPIRATION:86400000} # 1 day in milliseconds
+    auth-redirect-uri: ${AUTH_REDIRECT_URI}/auth/callback?id=
