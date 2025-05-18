@@ -1,7 +1,5 @@
 package com.springzr.museio.services.auth.service;
 
-import java.util.UUID;
-
 /**
  * A port for generating JWT tokens.
  *
@@ -20,7 +18,7 @@ public interface JwtService {
      * @param accountId the user for whom the JWT token will be generated
      * @return a JWT token representing the authenticated user
      */
-    String generateToken(String accountId);
+    String generateToken(Long accountId);
 
     /**
      * Extracts the username from the given JWT token.
@@ -28,7 +26,7 @@ public interface JwtService {
      * @param token the JWT token
      * @return the username from the token
      */
-    UUID extractId(String token);
+    Long extractId(String token);
 
     /**
      * Validates the JWT token by checking the username and expiration.
@@ -37,5 +35,5 @@ public interface JwtService {
      * @param accountId the user details to compare against the token
      * @return true if the token is valid, otherwise false
      */
-    boolean isTokenValid(String token, String accountId);
+    boolean isTokenValid(String token, Long accountId);
 }

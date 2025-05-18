@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +48,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         ) {
             String token = tokenOpt.get();
             try {
-                UUID accountId = jwtService.extractId(token);
-                if (jwtService.isTokenValid(token, accountId.toString())) {
+                Long accountId = jwtService.extractId(token);
+                if (jwtService.isTokenValid(token, accountId)) {
                     authenticateUser(request, accountId);
                 }
             } catch (JwtException ex) {
@@ -77,7 +76,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         return Optional.empty();
     }
 
-    private void authenticateUser(HttpServletRequest request, UUID accountId) {
+    private void authenticateUser(HttpServletRequest request, Long accountId) {
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                 accountId, null, null
         );

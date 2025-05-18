@@ -1,7 +1,6 @@
 package com.springzr.museio.services.auth.service.impl;
 
 import com.springzr.museio.services.auth.model.Account;
-import java.util.UUID;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 class JwtServiceImplTest {
 
     private JwtServiceImpl jwtServiceImpl;
-    private final UUID accountId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000");
+    private final Long accountId = 1L;
 
     @BeforeEach
     void setUp() {
@@ -35,7 +34,7 @@ class JwtServiceImplTest {
                 .build();
 
         // when
-        String token = jwtServiceImpl.generateToken(account.getId().toString());
+        String token = jwtServiceImpl.generateToken(account.getId());
 
         // then
         assertThat(token).isNotNull();
@@ -52,11 +51,11 @@ class JwtServiceImplTest {
                 .build();
 
         // when
-        String token = jwtServiceImpl.generateToken(account.getId().toString());
+        String token = jwtServiceImpl.generateToken(account.getId());
         assertThat(jwtServiceImpl.isTokenExpired(token)).isFalse();
 
         jwtServiceImpl.tokenExpiration = 0; // update expiration time
-        String expiredToken = jwtServiceImpl.generateToken(account.getId().toString());
+        String expiredToken = jwtServiceImpl.generateToken(account.getId());
 
         assertThat(jwtServiceImpl.isTokenExpired(expiredToken)).isTrue();
     }
@@ -70,9 +69,9 @@ class JwtServiceImplTest {
                 .name("John Doe")
                 .build();
 
-        String token = jwtServiceImpl.generateToken(account.getId().toString());
+        String token = jwtServiceImpl.generateToken(account.getId());
 
-        assertThat(jwtServiceImpl.isTokenValid(token, account.getId().toString())).isTrue();
+        assertThat(jwtServiceImpl.isTokenValid(token, account.getId())).isTrue();
     }
 
     @Test
@@ -84,9 +83,9 @@ class JwtServiceImplTest {
                 .name("John Doe")
                 .build();
 
-        String invalidId = "123e4567-e89b-12d3-a456-426614174111";
+        Long invalidId = 123L;
 
-        String token = jwtServiceImpl.generateToken(account.getId().toString());
+        String token = jwtServiceImpl.generateToken(account.getId());
 
         assertThat(jwtServiceImpl.isTokenValid(token, invalidId)).isFalse();
 
