@@ -37,7 +37,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
         String accountId = oauth2User.getName();
 
-        String token = jwtService.generateToken(accountId);
+        String token = jwtService.generateToken(Long.valueOf(accountId));
 
         String state = UUID.randomUUID().toString();
         tokenStore.store(state, token);

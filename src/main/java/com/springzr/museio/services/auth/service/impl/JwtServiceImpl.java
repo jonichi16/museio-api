@@ -8,7 +8,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
-import java.util.UUID;
+import java.util.Objects;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,10 +29,10 @@ public class JwtServiceImpl implements JwtService {
     Integer tokenExpiration;
 
     @Override
-    public String generateToken(String accountId) {
+    public String generateToken(Long accountId) {
         return Jwts
                 .builder()
-                .setSubject(accountId)
+                .setSubject(accountId.toString())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + tokenExpiration))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
@@ -40,15 +40,15 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public UUID extractId(String token) {
+    public Long extractId(String token) {
         String accountId = extractClaim(token, Claims::getSubject);
-        return UUID.fromString(accountId);
+        return Long.valueOf(accountId);
     }
 
     @Override
-    public boolean isTokenValid(String token, String accountId) {
-        final String id = extractId(token).toString();
-        return id.equals(accountId) && !isTokenExpired(token);
+    public boolean isTokenValid(String token, Long accountId) {
+        final Long id = extractId(token);
+        return Objects.equals(id, accountId) && !isTokenExpired(token);
     }
 
     /**
