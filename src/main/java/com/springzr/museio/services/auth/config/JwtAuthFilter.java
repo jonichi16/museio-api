@@ -1,10 +1,13 @@
 package com.springzr.museio.services.auth.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springzr.museio.libs.common.constant.ErrorCode;
+import com.springzr.museio.libs.common.dto.ErrorResponse;
+import com.springzr.museio.libs.common.dto.MSResponse;
 import com.springzr.museio.services.auth.service.JwtService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -12,6 +15,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,9 +33,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthFilter.class);
-    private static final String ACCESS_TOKEN_COOKIE = "__accessToken";
+    private static final String AUTHORIZATION_HEADER = "Authorization";
+    private static final String BEARER_PREFIX = "Bearer ";
 
     private final JwtService jwtService;
+    private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(
@@ -40,7 +46,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        Optional<String> tokenOpt = extractTokenFromCookies(request);
+        Optional<String> tokenOpt = extractTokenFromAuthorizationHeader(request);
 
         if (
                 tokenOpt.isPresent()
@@ -54,6 +60,19 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 }
             } catch (JwtException ex) {
                 LOGGER.warn("Invalid JWT token: {}", ex.getMessage());
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.setContentType("application/json");
+
+                MSResponse<Void> errorResponse = ErrorResponse.<Void>builder()
+                        .code(HttpStatus.UNAUTHORIZED.value())
+                        .message("Unauthorized")
+                        .errorCode(ErrorCode.UNAUTHORIZED)
+                        .build();
+
+                String json = objectMapper.writeValueAsString(errorResponse);
+
+                response.getWriter().write(json);
+                return;
             } catch (Exception ex) {
                 LOGGER.error("Unexpected error while processing JWT token", ex);
             }
@@ -62,17 +81,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private Optional<String> extractTokenFromCookies(HttpServletRequest request) {
-        if (request.getCookies() == null) {
-            return Optional.empty();
+    private Optional<String> extractTokenFromAuthorizationHeader(HttpServletRequest request) {
+        String header = request.getHeader(AUTHORIZATION_HEADER);
+        if (header != null && header.startsWith(BEARER_PREFIX)) {
+            return Optional.of(header.substring(BEARER_PREFIX.length()).trim());
         }
-
-        for (Cookie cookie : request.getCookies()) {
-            if (ACCESS_TOKEN_COOKIE.equals(cookie.getName())) {
-                return Optional.ofNullable(cookie.getValue());
-            }
-        }
-
         return Optional.empty();
     }
 
