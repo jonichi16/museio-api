@@ -38,6 +38,7 @@
 		<maven-pmd-plugin.version>3.26.0</maven-pmd-plugin.version>
 		<commons-compress.version>1.27.1</commons-compress.version>
 		<jjwt-version>0.12.6</jjwt-version>
+		<cloudinary-http5.version>2.2.0</cloudinary-http5.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -51,6 +52,13 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<!--	Cloudinary Dependencies	-->
+		<dependency>
+			<groupId>com.cloudinary</groupId>
+			<artifactId>cloudinary-http5</artifactId>
+			<version>${cloudinary-http5.version}</version>
 		</dependency>
 
 		<!--	Security Dependencies	-->
