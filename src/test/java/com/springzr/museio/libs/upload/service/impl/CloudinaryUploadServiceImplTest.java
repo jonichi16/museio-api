@@ -1,8 +1,8 @@
-package com.springzr.museio.libs.cloudinary.service.impl;
+package com.springzr.museio.libs.upload.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Uploader;
-import com.springzr.museio.libs.cloudinary.model.CloudinaryResult;
+import com.springzr.museio.libs.upload.model.UploadResult;
 import java.io.IOException;
 import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -24,14 +24,14 @@ import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-class CloudinaryServiceImplTest {
+class CloudinaryUploadServiceImplTest {
 
     @Mock
     private Cloudinary cloudinary;
     private Uploader uploader;
 
     @InjectMocks
-    private CloudinaryServiceImpl cloudinaryServiceImpl;
+    private CloudinaryUploadServiceImpl cloudinaryServiceImpl;
 
     @BeforeEach
     void setUp() {
@@ -58,7 +58,7 @@ class CloudinaryServiceImplTest {
 
         // when
         when(uploader.upload(any(byte[].class), anyMap())).thenReturn(mockResponse);
-        CloudinaryResult cloudinaryResult = cloudinaryServiceImpl.upload(file,  folderName);
+        UploadResult uploadResult = cloudinaryServiceImpl.upload(file,  folderName);
 
         // then
         verify(uploader, times(1)).upload(any(byte[].class), argThat(params ->
@@ -68,8 +68,8 @@ class CloudinaryServiceImplTest {
                         Boolean.TRUE.equals(params.get("use_asset_folder_as_public_id_prefix")) &&
                         Boolean.TRUE.equals(params.get("use_filename_as_display_name"))
         ));
-        assertThat(cloudinaryResult.url()).isEqualTo(mockResponse.get("secure_url").toString());
-        assertThat(cloudinaryResult.publicId()).isEqualTo(mockResponse.get("public_id").toString());
+        assertThat(uploadResult.url()).isEqualTo(mockResponse.get("secure_url").toString());
+        assertThat(uploadResult.publicId()).isEqualTo(mockResponse.get("public_id").toString());
     }
 
     @Test
@@ -88,7 +88,7 @@ class CloudinaryServiceImplTest {
 
         // when
         when(uploader.upload(any(byte[].class), anyMap())).thenReturn(mockResponse);
-        CloudinaryResult cloudinaryResult = cloudinaryServiceImpl.upload(file, folderName, publicId);
+        UploadResult uploadResult = cloudinaryServiceImpl.upload(file, folderName, publicId);
 
         // then
         verify(uploader, times(1)).upload(any(byte[].class), argThat(params ->
@@ -99,7 +99,7 @@ class CloudinaryServiceImplTest {
                         Boolean.TRUE.equals(params.get("use_filename_as_display_name")) &&
                         publicId.equals(params.get("public_id"))
         ));
-        assertThat(cloudinaryResult.url()).isEqualTo(mockResponse.get("secure_url").toString());
-        assertThat(cloudinaryResult.publicId()).isEqualTo(mockResponse.get("public_id").toString());
+        assertThat(uploadResult.url()).isEqualTo(mockResponse.get("secure_url").toString());
+        assertThat(uploadResult.publicId()).isEqualTo(mockResponse.get("public_id").toString());
     }
 }

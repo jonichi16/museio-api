@@ -1,10 +1,10 @@
-package com.springzr.museio.libs.cloudinary.service.impl;
+package com.springzr.museio.libs.upload.service.impl;
 
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.springzr.museio.libs.cloudinary.model.CloudinaryResult;
-import com.springzr.museio.libs.cloudinary.service.CloudinaryService;
+import com.springzr.museio.libs.upload.model.UploadResult;
+import com.springzr.museio.libs.upload.service.UploadService;
 import java.io.IOException;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
-public class CloudinaryServiceImpl implements CloudinaryService {
+public class CloudinaryUploadServiceImpl implements UploadService {
 
     @Value("${spring.application.name}")
     String appName;
@@ -24,19 +24,19 @@ public class CloudinaryServiceImpl implements CloudinaryService {
     private final Cloudinary cloudinary;
 
     @Override
-    public CloudinaryResult upload(MultipartFile file, String folderName) throws IOException {
+    public UploadResult upload(MultipartFile file, String folderName) throws IOException {
         return this.upload(file, folderName, null);
     }
 
     @Override
-    public CloudinaryResult upload(MultipartFile file, String folderName, String publicId) throws IOException {
+    public UploadResult upload(MultipartFile file, String folderName, String publicId) throws IOException {
 
         Map<String, Object> uploadParams = buildUploadParams(folderName, publicId);
 
         @SuppressWarnings("unchecked")
         Map<String, Object> result = cloudinary.uploader().upload(file.getBytes(), uploadParams);
 
-        return CloudinaryResult.builder()
+        return UploadResult.builder()
                 .url(result.get("secure_url").toString())
                 .publicId(result.get("public_id").toString())
                 .build();

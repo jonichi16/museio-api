@@ -1,4 +1,4 @@
-package com.springzr.museio.libs.cloudinary.config;
+package com.springzr.museio.libs.upload.config;
 
 import com.cloudinary.Cloudinary;
 import org.springframework.beans.factory.annotation.Value;
