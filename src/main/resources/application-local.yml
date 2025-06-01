@@ -1,0 +1,11 @@
+spring:
+  jpa:
+    show-sql: true
+
+logging:
+  level:
+    com:
+      springzr: DEBUG
+
+storage:
+  upload-dir: /uploads/
