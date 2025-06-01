@@ -2,6 +2,7 @@ package com.springzr.museio.services.auth.controller;
 
 import com.springzr.museio.libs.common.dto.MSResponse;
 import com.springzr.museio.services.auth.model.request.TokenRequest;
+import com.springzr.museio.services.auth.model.response.RegisterResponse;
 import com.springzr.museio.services.auth.model.response.TokenResponse;
 import com.springzr.museio.services.auth.service.AuthService;
 import java.util.Objects;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,6 +67,32 @@ class AuthControllerTest {
         assertThat(Objects.requireNonNull(response.getBody()).getData().bearerType()).isEqualTo("Bearer");
         assertThat(response.getBody().getMessage()).isEqualTo("Authentication successful");
         assertThat(response.getBody().getCode()).isEqualTo(200);
+    }
+
+    @Test
+    void register_shouldReturnCorrectResponseBody() {
+        // given
+        MockMultipartFile file = new MockMultipartFile(
+                "profilePicture", "test.jpg", "image/jpg", new byte[1000]
+        );
+        String username = "johndoe";
+        String bio = "This is a sample bio";
+
+        RegisterResponse registerResponse = RegisterResponse.builder()
+                .username(username)
+                .build();
+
+        // when
+        when(authService.register(username, bio, file)).thenReturn(registerResponse);
+        ResponseEntity<MSResponse<RegisterResponse>> response = authController.register(username, bio, file);
+
+        // then
+        verify(authService, times(1)).register(username, bio, file);
+        assertThat(response.getStatusCode().value()).isEqualTo(201);
+        assertThat(Objects.requireNonNull(response.getBody()).getData().username()).isEqualTo(username);
+        assertThat(response.getBody().getMessage()).isEqualTo("Profile created successfully");
+        assertThat(response.getBody().getCode()).isEqualTo(201);
+
     }
 
 }
