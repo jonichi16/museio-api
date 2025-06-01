@@ -8,4 +8,4 @@ logging:
       springzr: DEBUG
 
 storage:
-  upload-dir: /uploads/
+  upload-dir: ./uploads/

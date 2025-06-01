@@ -2,10 +2,13 @@ package com.springzr.museio.libs.upload.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.Uploader;
+import com.springzr.museio.libs.common.constant.ErrorCode;
+import com.springzr.museio.libs.common.exception.MSException;
 import com.springzr.museio.libs.upload.model.UploadResult;
 import java.io.IOException;
 import java.util.Map;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +22,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -101,5 +105,28 @@ class CloudinaryUploadServiceImplTest {
         ));
         assertThat(uploadResult.url()).isEqualTo(mockResponse.get("secure_url").toString());
         assertThat(uploadResult.publicId()).isEqualTo(mockResponse.get("public_id").toString());
+    }
+
+    @Test
+    void upload_whenIOExceptionOccurs_shouldThrowMSException() throws Exception {
+        // given
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "test.jpg", "image/jpg", new byte[1000]
+        );
+
+        // when
+        when(uploader.upload(any(byte[].class), anyMap())).thenThrow(
+                new IOException("Simulated failure")
+        );
+
+        // then
+        assertThatThrownBy(() -> cloudinaryServiceImpl.upload(file, "test-folder", null))
+                .isInstanceOf(MSException.class)
+                .hasMessage("Upload failed")
+                .satisfies(ex -> {
+                    MSException msEx = (MSException) ex;
+                    assertThat(msEx.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+                    assertThat(msEx.getErrorCode()).isEqualTo(ErrorCode.BAD_REQUEST);
+                });
     }
 }

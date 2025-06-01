@@ -23,3 +23,19 @@ include::{snippets}/tokenBadRequest/response-body.adoc[]
 include::{snippets}/tokenUnauthorized/response-body.adoc[]
 
 '''
+
+=== Register
+`POST /api/auth/register`
+
+Register a new user.
+
+==== Request
+
+include::{snippets}/registerSuccess/form-parameters.adoc[]
+include::{snippets}/registerSuccess/request-parts.adoc[]
+
+==== Success Response
+
+include::{snippets}/registerSuccess/response-body.adoc[]
+
+'''

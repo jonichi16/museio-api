@@ -3,6 +3,8 @@ package com.springzr.museio.libs.upload.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.springzr.museio.libs.common.constant.ErrorCode;
+import com.springzr.museio.libs.common.exception.MSException;
 import com.springzr.museio.libs.upload.model.UploadResult;
 import com.springzr.museio.libs.upload.service.UploadService;
 import java.io.IOException;
@@ -10,9 +12,17 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * Cloudinary implementation of {@link UploadService}.
+ *
+ * <p>This will upload the images to {@link Cloudinary} which will return the secure_url and
+ *      public_id
+ * </p>
+ */
 @Service
 @RequiredArgsConstructor
 @Profile("!local")
@@ -26,22 +36,27 @@ public class CloudinaryUploadServiceImpl implements UploadService {
     private final Cloudinary cloudinary;
 
     @Override
-    public UploadResult upload(MultipartFile file, String folderName) throws IOException {
+    public UploadResult upload(MultipartFile file, String folderName) {
         return this.upload(file, folderName, null);
     }
 
     @Override
-    public UploadResult upload(MultipartFile file, String folderName, String publicId) throws IOException {
+    public UploadResult upload(MultipartFile file, String folderName, String publicId) {
 
-        Map<String, Object> uploadParams = buildUploadParams(folderName, publicId);
+        try {
+            Map<String, Object> uploadParams = buildUploadParams(folderName, publicId);
 
-        @SuppressWarnings("unchecked")
-        Map<String, Object> result = cloudinary.uploader().upload(file.getBytes(), uploadParams);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> result = cloudinary.uploader()
+                    .upload(file.getBytes(), uploadParams);
 
-        return UploadResult.builder()
-                .url(result.get("secure_url").toString())
-                .publicId(result.get("public_id").toString())
-                .build();
+            return UploadResult.builder()
+                    .url(result.get("secure_url").toString())
+                    .publicId(result.get("public_id").toString())
+                    .build();
+        } catch (IOException ex) {
+            throw new MSException("Upload failed", HttpStatus.BAD_REQUEST, ErrorCode.BAD_REQUEST);
+        }
     }
 
     private Map<String, Object> buildUploadParams(String folderName, String publicId) {
