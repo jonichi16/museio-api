@@ -16,6 +16,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service class that implements {@link CollectionService}.
+ */
 @Service
 @RequiredArgsConstructor
 public class CollectionServiceImpl implements CollectionService {
@@ -40,21 +43,5 @@ public class CollectionServiceImpl implements CollectionService {
         }
 
         return new CollectionResponse(collectionsPage.getContent(), new CollectionResponse.Pagination(collectionsPage));
-
-
-
-//        List<String> validPortfolios = List.of("PORTFOLIO_VISUAL", "PORTFOLIO_LITERARY");
-//
-//        if (!validPortfolios.contains(portfolio.toUpperCase())) {
-//            throw new MSException("Invalid portfolio value", HttpStatus.BAD_REQUEST, ErrorCode.BAD_REQUEST);
-//        }
-//
-//        Pageable pageable = PageRequest.of(page - 1, size);
-//        Page<Collection> collectionsPage = collectionRepository.findByPortfolio(portfolio, pageable);
-//
-//        return new CollectionResponse(
-//                collectionsPage.getContent(),
-//                new CollectionResponse.Pagination(collectionsPage)
-//        );
     }
 }

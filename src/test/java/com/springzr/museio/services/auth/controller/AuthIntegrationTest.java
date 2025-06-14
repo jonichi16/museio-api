@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@WebMvcTest
+@WebMvcTest(AuthController.class)
 @Import(SecurityConfig.class)
 @ActiveProfiles("test")
 @AutoConfigureRestDocs(outputDir = "target/generated-snippets")
