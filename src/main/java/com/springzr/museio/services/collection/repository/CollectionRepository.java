@@ -14,16 +14,22 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CollectionRepository extends JpaRepository<Collection, Long> {
     /**
+     * Retrieves a paginated list of collections. If a portfolio is provided, findByPortfolio;
+     * otherwise, fetches all collections (findAll).
+     *
      * @param pageable the pagination and sorting information
-     * @return an optional containing the portfolio is null, it will fetch all items, otherwise findByPortfolio
+     * @return a page of collections, optionally filtered by portfolio
      */
     @NonNull Page<Collection> findAll(@NonNull Pageable pageable);
 
     /**
+     * Retrieves collections filtered by portfolio with pagination support.
+     * If the portfolio is null or empty, all collections are returned(findAll).
+     *
      * @param portfolio the portfolio to filter by (e.g., "PORTFOLIO_VISUAL", "PORTFOLIO_LITERARY");
-     *                 if null or empty, all collections are retrieved.
-     * @param pageable the pagination and sorting information
-     * @return an optional containing the portfolio is null, it will fetch all items, otherwise findByPortfolio
+     *                  if null or empty, all collections are retrieved
+     * @param pageable  the pagination and sorting information
+     * @return a page of collections, filtered by portfolio if specified
      */
     Page<Collection> findByPortfolio(String portfolio, Pageable pageable);
 }
