@@ -57,4 +57,6 @@ public class CollectionController {
         return ResponseEntity.status(status).body(response);
     }
 
+    public <TokenRequest> void getCollections(TokenRequest request, int page, int size) {
+    }
 }
