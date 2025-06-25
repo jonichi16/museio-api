@@ -35,7 +35,7 @@
 		<checkstyle.version>10.25.1</checkstyle.version>
 		<spotbugs-maven-plugin.version>4.9.3.2</spotbugs-maven-plugin.version>
 		<spotbugs.version>4.9.3</spotbugs.version>
-		<maven-pmd-plugin.version>3.26.0</maven-pmd-plugin.version>
+		<maven-pmd-plugin.version>3.27.0</maven-pmd-plugin.version>
 		<commons-compress.version>1.27.1</commons-compress.version>
 		<jjwt-version>0.12.6</jjwt-version>
 		<cloudinary-http5.version>2.2.0</cloudinary-http5.version>
