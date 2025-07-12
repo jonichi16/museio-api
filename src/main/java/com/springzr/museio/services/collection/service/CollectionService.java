@@ -1,5 +1,7 @@
 package com.springzr.museio.services.collection.service;
 
+import com.springzr.museio.services.collection.model.Collection;
+import com.springzr.museio.services.collection.model.request.CollectionRequest;
 import com.springzr.museio.services.collection.model.response.CollectionResponse;
 
 /**
@@ -16,4 +18,6 @@ public interface CollectionService {
      * @return {@link CollectionResponse} containing the collections and pagination details.
      */
     CollectionResponse getCollectionsByPortfolio(String portfolio, int page, int size);
+    Collection createCollection(CollectionRequest request);
+
 }

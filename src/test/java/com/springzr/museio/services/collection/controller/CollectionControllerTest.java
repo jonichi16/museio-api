@@ -2,6 +2,8 @@ package com.springzr.museio.services.collection.controller;
 
 import com.springzr.museio.libs.common.dto.MSResponse;
 import com.springzr.museio.services.collection.model.Collection;
+import com.springzr.museio.services.collection.model.request.CollectionRequest;
+import com.springzr.museio.services.collection.model.response.CollectionGetResponse;
 import com.springzr.museio.services.collection.model.response.CollectionResponse;
 import com.springzr.museio.services.collection.model.response.CollectionsSuccessResponse;
 import com.springzr.museio.services.collection.service.CollectionService;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +35,85 @@ class CollectionControllerTest {
     @InjectMocks
     private CollectionController collectionController;
 
+    // --- POST /collection Tests ---
+
+    @Test
+    void createCollection_shouldCallServiceOnce() {
+        // given
+        CollectionRequest request = new CollectionRequest();
+        request.setTitle("Art Collection");
+        request.setDescription("Modern art collection");
+        request.setPortfolio("PORTFOLIO_VISUAL");
+
+        Collection collection = new Collection();
+        collection.setId(1L);
+        collection.setAccountId(1L);
+        collection.setTitle("Art Collection");
+        collection.setDescription("Modern art collection");
+        collection.setPortfolio("PORTFOLIO_VISUAL");
+
+        when(collectionService.createCollection(request)).thenReturn(collection);
+
+        // when
+        collectionController.createCollection(request);
+
+        // then
+        verify(collectionService, times(1)).createCollection(request);
+    }
+
+    @Test
+    void createCollection_shouldReturnCorrectResponse() {
+        // given
+        Long id = 1L;
+        CollectionRequest request = new CollectionRequest();
+        request.setTitle("Nature Photography");
+        request.setDescription("Collection of nature photos");
+        request.setPortfolio("portfolio-456");
+
+        Collection saved = new Collection();
+        saved.setId(id);
+        saved.setAccountId(id);
+        saved.setTitle("Nature Photography");
+        saved.setDescription("Collection of nature photos");
+        saved.setPortfolio("portfolio-456");
+
+        when(collectionService.createCollection(request)).thenReturn(saved);
+
+        // when
+        ResponseEntity<CollectionGetResponse> response = collectionController.createCollection(request);
+
+        // then
+        assertThat(response.getStatusCode().value()).isEqualTo(201);
+        assertThat(Objects.requireNonNull(response.getBody()).isSuccess()).isTrue();
+        assertThat(response.getBody().getCode()).isEqualTo(201);
+        assertThat(response.getBody().getMessage()).isEqualTo("Collection created successfully");
+        assertThat(response.getBody().getData().get("collectionId")).isEqualTo(id);
+    }
+
+    @Test
+    void createCollection_shouldReturnBadRequestOnIllegalArgument() {
+        // given
+        CollectionRequest request = new CollectionRequest();
+        request.setTitle(null); // invalid title
+        request.setDescription("Bad data");
+        request.setPortfolio("portfolio-999");
+
+        when(collectionService.createCollection(request))
+                .thenThrow(new IllegalArgumentException("Title is required"));
+
+        // when
+        ResponseEntity<CollectionGetResponse> response = collectionController.createCollection(request);
+
+        // then
+        assertThat(response.getStatusCode().value()).isEqualTo(400);
+        assertThat(Objects.requireNonNull(response.getBody()).isSuccess()).isFalse();
+        assertThat(response.getBody().getCode()).isEqualTo(400);
+        assertThat(response.getBody().getMessage()).isEqualTo("Title is required");
+        assertThat(response.getBody().getData()).isNull();
+    }
+
+    // --- GET /collections Tests ---
+
     @Test
     void getCollectionsByPortfolio_shouldCallServiceOnceAndReturnSuccessResponse() {
         // given
@@ -40,8 +122,8 @@ class CollectionControllerTest {
         int size = 10;
 
         List<Collection> mockCollections = List.of(
-                new Collection(1L, "Title 1", portfolio),
-                new Collection(2L, "Title 2", portfolio)
+                new Collection(1L, "Title 1", portfolio, "desc 1", 1L),
+                new Collection(2L, "Title 2", portfolio, "desc 2", 1L)
         );
 
         CollectionResponse.Pagination pagination = new CollectionResponse.Pagination(
@@ -54,7 +136,8 @@ class CollectionControllerTest {
                 .thenReturn(mockResponse);
 
         // when
-        ResponseEntity<MSResponse<?>> responseEntity = collectionController.getCollectionsByPortfolio(portfolio, page, size);
+        ResponseEntity<MSResponse<?>> responseEntity =
+                collectionController.getCollectionsByPortfolio(portfolio, page, size);
 
         // then
         verify(collectionService, times(1)).getCollectionsByPortfolio(portfolio, page, size);
@@ -74,8 +157,8 @@ class CollectionControllerTest {
     void shouldCreatePaginationFromPage() {
         // given
         List<Collection> items = List.of(
-                new Collection(1L, "Title 1", "PORTFOLIO_VISUAL"),
-                new Collection(2L, "Title 2", "PORTFOLIO_VISUAL")
+                new Collection(1L, "Title 1", "PORTFOLIO_VISUAL", "desc 1", 1L),
+                new Collection(2L, "Title 2", "PORTFOLIO_VISUAL", "desc 2", 1L)
         );
         Page<Collection> page = new PageImpl<>(items, PageRequest.of(0, 10), 20);
 
@@ -93,7 +176,7 @@ class CollectionControllerTest {
     void shouldCreateCollectionResponseCorrectly() {
         // given
         List<Collection> collections = List.of(
-                new Collection(1L, "Title 1", "PORTFOLIO_VISUAL")
+                new Collection(1L, "Title 1", "PORTFOLIO_VISUAL", "desc", 1L)
         );
         CollectionResponse.Pagination pagination = new CollectionResponse.Pagination(10, 1, 1, 1);
 
@@ -103,7 +186,6 @@ class CollectionControllerTest {
         // then
         assertThat(response.collections()).hasSize(1);
         assertThat(response.collections().getFirst().getTitle()).isEqualTo("Title 1");
-
         assertThat(response.pagination().size()).isEqualTo(10);
         assertThat(response.pagination().page()).isEqualTo(1);
     }

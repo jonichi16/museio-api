@@ -2,17 +2,20 @@ package com.springzr.museio.services.collection.controller;
 
 import com.springzr.museio.libs.common.dto.MSResponse;
 import com.springzr.museio.libs.common.dto.SuccessResponse;
+import com.springzr.museio.services.collection.model.Collection;
+import com.springzr.museio.services.collection.model.request.CollectionRequest;
+import com.springzr.museio.services.collection.model.response.CollectionGetResponse;
 import com.springzr.museio.services.collection.model.response.CollectionResponse;
 import com.springzr.museio.services.collection.service.CollectionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * Controller responsible for handling user collection-related endpoints.
@@ -56,4 +59,25 @@ public class CollectionController {
         LOGGER.info("END : /collections");
         return ResponseEntity.status(status).body(response);
     }
+
+    /**
+     * Create collection.
+     */
+    @PostMapping("/collection")
+    public ResponseEntity<CollectionGetResponse> createCollection(@Valid @RequestBody CollectionRequest request) {
+        try {
+            Collection saved = collectionService.createCollection(request);
+            CollectionGetResponse resp = new CollectionGetResponse(
+                    true, 201, "Collection created successfully",
+                    Map.of("collectionId", saved.getId())
+            );
+            return ResponseEntity.status(201).body(resp);
+        } catch (IllegalArgumentException ex) {
+            CollectionGetResponse error = new CollectionGetResponse(
+                    false, 400, ex.getMessage(), null
+            );
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
 }

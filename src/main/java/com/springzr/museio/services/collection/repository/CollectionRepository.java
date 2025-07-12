@@ -32,5 +32,7 @@ public interface CollectionRepository extends JpaRepository<Collection, Long> {
      * @return a page of collections, filtered by portfolio if specified
      */
     Page<Collection> findByPortfolio(String portfolio, Pageable pageable);
+
+
 }
 
