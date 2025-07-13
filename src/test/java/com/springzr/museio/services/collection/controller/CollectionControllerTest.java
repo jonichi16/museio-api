@@ -3,7 +3,7 @@ package com.springzr.museio.services.collection.controller;
 import com.springzr.museio.libs.common.dto.MSResponse;
 import com.springzr.museio.services.collection.model.Collection;
 import com.springzr.museio.services.collection.model.request.CollectionRequest;
-import com.springzr.museio.services.collection.model.response.CollectionGetResponse;
+import com.springzr.museio.services.collection.model.response.CollectionPostResponse;
 import com.springzr.museio.services.collection.model.response.CollectionResponse;
 import com.springzr.museio.services.collection.model.response.CollectionsSuccessResponse;
 import com.springzr.museio.services.collection.service.CollectionService;
@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,7 +79,7 @@ class CollectionControllerTest {
         when(collectionService.createCollection(request)).thenReturn(saved);
 
         // when
-        ResponseEntity<CollectionGetResponse> response = collectionController.createCollection(request);
+        ResponseEntity<CollectionPostResponse> response = collectionController.createCollection(request);
 
         // then
         assertThat(response.getStatusCode().value()).isEqualTo(201);
@@ -102,7 +101,7 @@ class CollectionControllerTest {
                 .thenThrow(new IllegalArgumentException("Title is required"));
 
         // when
-        ResponseEntity<CollectionGetResponse> response = collectionController.createCollection(request);
+        ResponseEntity<CollectionPostResponse> response = collectionController.createCollection(request);
 
         // then
         assertThat(response.getStatusCode().value()).isEqualTo(400);

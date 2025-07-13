@@ -18,6 +18,13 @@ public interface CollectionService {
      * @return {@link CollectionResponse} containing the collections and pagination details.
      */
     CollectionResponse getCollectionsByPortfolio(String portfolio, int page, int size);
-    Collection createCollection(CollectionRequest request);
 
+    /**
+     * Creates a new collection based on the provided request data.
+     *
+     * @param request the collection request containing title, description, and portfolio type
+     * @return the created {@link Collection} entity
+     * @throws IllegalArgumentException if the request data is invalid
+     */
+    Collection createCollection(CollectionRequest request);
 }
