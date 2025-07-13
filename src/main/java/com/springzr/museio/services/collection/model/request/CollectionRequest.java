@@ -1,7 +1,13 @@
 package com.springzr.museio.services.collection.model.request;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
+/**
+ * Request DTO for creating or updating a collection.
+ * Contains the title, description, and associated portfolio type.
+ */
+@Data
 public class CollectionRequest {
 
     @NotBlank(message = "Title is required")
@@ -11,28 +17,4 @@ public class CollectionRequest {
 
     @NotBlank(message = "Portfolio is required")
     private String portfolio;
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public String getPortfolio() {
-        return portfolio;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setPortfolio(String portfolio) {
-        this.portfolio = portfolio;
-    }
 }

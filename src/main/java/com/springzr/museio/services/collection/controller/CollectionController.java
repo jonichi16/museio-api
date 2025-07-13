@@ -4,18 +4,22 @@ import com.springzr.museio.libs.common.dto.MSResponse;
 import com.springzr.museio.libs.common.dto.SuccessResponse;
 import com.springzr.museio.services.collection.model.Collection;
 import com.springzr.museio.services.collection.model.request.CollectionRequest;
-import com.springzr.museio.services.collection.model.response.CollectionGetResponse;
+import com.springzr.museio.services.collection.model.response.CollectionPostResponse;
 import com.springzr.museio.services.collection.model.response.CollectionResponse;
 import com.springzr.museio.services.collection.service.CollectionService;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Controller responsible for handling user collection-related endpoints.
@@ -64,16 +68,17 @@ public class CollectionController {
      * Create collection.
      */
     @PostMapping("/collection")
-    public ResponseEntity<CollectionGetResponse> createCollection(@Valid @RequestBody CollectionRequest request) {
+    public ResponseEntity<CollectionPostResponse> createCollection(
+            @Valid @RequestBody CollectionRequest request) {
         try {
             Collection saved = collectionService.createCollection(request);
-            CollectionGetResponse resp = new CollectionGetResponse(
+            CollectionPostResponse resp = new CollectionPostResponse(
                     true, 201, "Collection created successfully",
                     Map.of("collectionId", saved.getId())
             );
             return ResponseEntity.status(201).body(resp);
         } catch (IllegalArgumentException ex) {
-            CollectionGetResponse error = new CollectionGetResponse(
+            CollectionPostResponse error = new CollectionPostResponse(
                     false, 400, ex.getMessage(), null
             );
             return ResponseEntity.badRequest().body(error);
