@@ -1,4 +1,4 @@
-package com.springzr.museio.services.profile.model.response;
+package com.springzr.museio.services.userprofile.model.response;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Builder;
@@ -8,7 +8,7 @@ import lombok.Builder;
  */
 @Builder
 @JsonPropertyOrder({ "username", "name", "email", "bio", "profilePicture" })
-public record ProfileResponse(
+public record UserProfileResponse(
         String username,
         String name,
         String email,

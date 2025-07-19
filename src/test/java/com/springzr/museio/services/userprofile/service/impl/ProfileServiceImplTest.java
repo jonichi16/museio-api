@@ -1,11 +1,12 @@
-package com.springzr.museio.services.profile.service.impl;
+package com.springzr.museio.services.userprofile.service.impl;
 
 import com.springzr.museio.libs.common.constant.ErrorCode;
 import com.springzr.museio.libs.common.exception.MSException;
 import com.springzr.museio.services.auth.model.Account;
-import com.springzr.museio.services.profile.model.Profile;
-import com.springzr.museio.services.profile.model.response.ProfileResponse;
-import com.springzr.museio.services.profile.repository.ProfileRepository;
+import com.springzr.museio.services.auth.repository.AccountRepository;
+import com.springzr.museio.services.userprofile.model.UserProfile;
+import com.springzr.museio.services.userprofile.model.response.UserProfileResponse;
+import com.springzr.museio.services.userprofile.repository.UserProfileRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +24,9 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 class ProfileServiceImplTest {
     @Mock
-    private ProfileRepository profileRepository;
+    private UserProfileRepository userProfileRepository;
+    @Mock
+    private AccountRepository accountRepository;
 
     @InjectMocks
     private ProfileServiceImpl profileService;
@@ -32,22 +35,26 @@ class ProfileServiceImplTest {
     void getProfileByUsername_shouldReturnProfileResponse_whenUsernameExists() {
         // Arrange
         String username = "JohnDoe";
+        Long accountId = 1L;
+
         Account mockAccount = Account.builder()
+                .id(accountId)
                 .name("John Doe")
                 .email("johndoe@mail.com")
                 .build();
 
-        Profile mockProfile = Profile.builder()
+        UserProfile mockProfile = UserProfile.builder()
+                .accountId(accountId)
                 .username(username)
                 .bio("Digital Artist")
                 .profilePicture("https://sample.com/pfp.jpg")
-                .account(mockAccount)
                 .build();
 
-        when(profileRepository.findByUsername(username)).thenReturn(Optional.of(mockProfile));
+        when(userProfileRepository.findByUsername(username)).thenReturn(Optional.of(mockProfile));
+        when(accountRepository.findById(accountId)).thenReturn(Optional.of(mockAccount));
 
         // Act
-        ProfileResponse response = profileService.getProfileByUsername(username);
+        UserProfileResponse response = profileService.getProfileByUsername(username);
 
         // Assert
         assertThat(response).isNotNull();
@@ -57,14 +64,15 @@ class ProfileServiceImplTest {
         assertThat(response.bio()).isEqualTo("Digital Artist");
         assertThat(response.profilePicture()).isEqualTo("https://sample.com/pfp.jpg");
 
-        verify(profileRepository, times(1)).findByUsername(username);
+        verify(userProfileRepository, times(1)).findByUsername(username);
+        verify(accountRepository, times(1)).findById(accountId);
     }
 
     @Test
     void getProfileByUsername_shouldThrowException_whenUsernameNotFound() {
         // Arrange
         String username = "unknownUser";
-        when(profileRepository.findByUsername(username)).thenReturn(Optional.empty());
+        when(userProfileRepository.findByUsername(username)).thenReturn(Optional.empty());
 
         // Act & Assert
         MSException exception = assertThrows(MSException.class, () ->
@@ -75,7 +83,7 @@ class ProfileServiceImplTest {
         assertThat(exception.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.NOT_FOUND);
 
-        verify(profileRepository, times(1)).findByUsername(username);
+        verify(userProfileRepository, times(1)).findByUsername(username);
     }
 
 

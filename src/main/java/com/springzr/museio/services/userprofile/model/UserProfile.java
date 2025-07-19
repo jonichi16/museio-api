@@ -1,12 +1,9 @@
-package com.springzr.museio.services.profile.model;
+package com.springzr.museio.services.userprofile.model;
 
 import com.springzr.museio.services.auth.model.Account;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -17,8 +14,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 /**
  * Represents a user profile in the system.
- * This entity is mapped to the {@code profile} table and is associated
- * one-to-one with an {@link Account} using the same primary key (account ID).
+ * This entity is mapped to the {@code userprofile} table.
  * The profile contains additional user information such as bio and profile picture,
  * and includes timestamps for creation and last update.
  */
@@ -28,20 +24,16 @@ import org.hibernate.annotations.CreationTimestamp;
 @AllArgsConstructor
 @Entity
 @Table(name = "profile")
-public class Profile {
-
+public class UserProfile {
     @Id
     @Column(name = "account_id")
-    private Long id;
-
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "account_id")
-    private Account account;
-
-    String username;
-    String bio;
-    String profilePicture;
+    private Long accountId;
+    private String username;
+    private String bio;
+    @Column(name = "profile_picture")
+    private String profilePicture;
+    @Column(name = "profile_picture_id")
+    private String profilePictureId;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

@@ -1,8 +1,8 @@
-package com.springzr.museio.services.profile.controller;
+package com.springzr.museio.services.userprofile.controller;
 
 import com.springzr.museio.libs.common.dto.MSResponse;
-import com.springzr.museio.services.profile.model.response.ProfileResponse;
-import com.springzr.museio.services.profile.service.ProfileService;
+import com.springzr.museio.services.userprofile.model.response.UserProfileResponse;
+import com.springzr.museio.services.userprofile.service.ProfileService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,12 +17,12 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
-class ProfileControllerTest {
+class UserProfileControllerTest {
     @Mock
     private ProfileService profileService;
 
     @InjectMocks
-    private ProfileController profileController;
+    private UserProfileController userProfileController;
 
     @Test
     void getUserProfile_shouldReturnCorrectData() {
@@ -35,7 +35,7 @@ class ProfileControllerTest {
 
         // Mock the service response
         when(profileService.getProfileByUsername(username)).thenReturn(
-                ProfileResponse.builder()
+                UserProfileResponse.builder()
                         .username(username)
                         .name(name)
                         .email(email)
@@ -45,17 +45,17 @@ class ProfileControllerTest {
         );
 
         // When
-        ResponseEntity<MSResponse<ProfileResponse>> response = profileController.getUserProfile(username);
+        ResponseEntity<MSResponse<UserProfileResponse>> response = userProfileController.getUserProfile(username);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        MSResponse<ProfileResponse> body = response.getBody();
+        MSResponse<UserProfileResponse> body = response.getBody();
         assertThat(body).isNotNull();
         assertThat(body.getCode()).isEqualTo(200);
         assertThat(body.getMessage()).isEqualTo("Profile retrieved successfully");
 
-        ProfileResponse profile = body.getData();
+        UserProfileResponse profile = body.getData();
         assertThat(profile.username()).isEqualTo(username);
         assertThat(profile.name()).isEqualTo(name);
         assertThat(profile.email()).isEqualTo(email);
