@@ -1,6 +1,5 @@
 package com.springzr.museio.services.userprofile.model;
 
-import com.springzr.museio.services.auth.model.Account;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
