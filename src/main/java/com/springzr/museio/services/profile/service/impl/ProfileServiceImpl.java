@@ -1,13 +1,13 @@
-package com.springzr.museio.services.userprofile.service.impl;
+package com.springzr.museio.services.profile.service.impl;
 
 import com.springzr.museio.libs.common.constant.ErrorCode;
 import com.springzr.museio.libs.common.exception.MSException;
 import com.springzr.museio.services.auth.model.Account;
+import com.springzr.museio.services.auth.model.Profile;
 import com.springzr.museio.services.auth.repository.AccountRepository;
-import com.springzr.museio.services.userprofile.model.UserProfile;
-import com.springzr.museio.services.userprofile.model.response.UserProfileResponse;
-import com.springzr.museio.services.userprofile.repository.UserProfileRepository;
-import com.springzr.museio.services.userprofile.service.ProfileService;
+import com.springzr.museio.services.auth.repository.ProfileRepository;
+import com.springzr.museio.services.profile.model.response.ProfileResponse;
+import com.springzr.museio.services.profile.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,12 +19,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
 
-    private final UserProfileRepository userProfileRepository;
+    private final ProfileRepository profileRepository;
     private final AccountRepository accountRepository;
 
     @Override
-    public UserProfileResponse getProfileByUsername(String username) {
-        UserProfile profile = userProfileRepository.findByUsername(username)
+    public ProfileResponse getProfileByUsername(String username) {
+        Profile profile = profileRepository.findByUsername(username)
                 .orElseThrow(() -> new MSException(
                         "Profile not found",
                         HttpStatus.NOT_FOUND,
@@ -38,7 +38,7 @@ public class ProfileServiceImpl implements ProfileService {
                         ErrorCode.NOT_FOUND
                 ));
 
-        return UserProfileResponse.builder()
+        return ProfileResponse.builder()
                 .username(profile.getUsername())
                 .name(account.getName())
                 .email(account.getEmail())

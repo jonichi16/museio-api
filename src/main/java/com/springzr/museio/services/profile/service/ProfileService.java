@@ -1,6 +1,6 @@
-package com.springzr.museio.services.userprofile.service;
+package com.springzr.museio.services.profile.service;
 
-import com.springzr.museio.services.userprofile.model.response.UserProfileResponse;
+import com.springzr.museio.services.profile.model.response.ProfileResponse;
 
 /**
  * Service interface for collection-related operations.
@@ -12,5 +12,5 @@ public interface ProfileService {
      * @param username the username of the profile to retrieve
      * @return the profile response
      */
-    UserProfileResponse getProfileByUsername(String username);
+    ProfileResponse getProfileByUsername(String username);
 }

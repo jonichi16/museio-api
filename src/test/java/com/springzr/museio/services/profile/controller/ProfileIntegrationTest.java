@@ -1,11 +1,11 @@
-package com.springzr.museio.services.userprofile.controller;
+package com.springzr.museio.services.profile.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springzr.museio.libs.common.constant.ErrorCode;
 import com.springzr.museio.libs.common.exception.MSException;
 import com.springzr.museio.services.auth.config.JwtAuthFilter;
-import com.springzr.museio.services.userprofile.model.response.UserProfileResponse;
-import com.springzr.museio.services.userprofile.service.ProfileService;
+import com.springzr.museio.services.profile.model.response.ProfileResponse;
+import com.springzr.museio.services.profile.service.ProfileService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
@@ -26,12 +26,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-@WebMvcTest(UserProfileController.class)
+@WebMvcTest(ProfileController.class)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureRestDocs(outputDir = "target/generated-snippets")
 
-class UserProfileIntegrationTest {
+class ProfileIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -43,13 +43,13 @@ class UserProfileIntegrationTest {
     private ObjectMapper objectMapper;
 
     @MockBean
-    private JwtAuthFilter jwtAuthFilter; // <- THIS IS THE FIX
+    private JwtAuthFilter jwtAuthFilter;
 
     @Test
     void getUserProfile_shouldReturn200Ok_whenUsernameExists() throws Exception {
         // given
         String username = "johndoe";
-        UserProfileResponse response = UserProfileResponse.builder()
+        ProfileResponse response = ProfileResponse.builder()
                 .username(username)
                 .name("John Doe")
                 .email("johndoe@example.com")

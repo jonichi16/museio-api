@@ -1,9 +1,9 @@
-package com.springzr.museio.services.userprofile.controller;
+package com.springzr.museio.services.profile.controller;
 
 import com.springzr.museio.libs.common.dto.MSResponse;
 import com.springzr.museio.libs.common.dto.SuccessResponse;
-import com.springzr.museio.services.userprofile.model.response.UserProfileResponse;
-import com.springzr.museio.services.userprofile.service.ProfileService;
+import com.springzr.museio.services.profile.model.response.ProfileResponse;
+import com.springzr.museio.services.profile.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class UserProfileController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserProfileController.class);
+public class ProfileController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProfileController.class);
     private final ProfileService profileService;
 
     /**
@@ -32,15 +32,15 @@ public class UserProfileController {
      * @return a {@link ResponseEntity} containing the user profile
      */
     @GetMapping("/{username}")
-    public ResponseEntity<MSResponse<UserProfileResponse>> getUserProfile(
+    public ResponseEntity<MSResponse<ProfileResponse>> getUserProfile(
             @PathVariable String username
     ) {
         LOGGER.info("START: GET /api/auth/{}", username);
 
-        UserProfileResponse profile = profileService.getProfileByUsername(username);
+        ProfileResponse profile = profileService.getProfileByUsername(username);
         HttpStatus status = HttpStatus.OK;
 
-        MSResponse<UserProfileResponse> response = SuccessResponse.<UserProfileResponse>builder()
+        MSResponse<ProfileResponse> response = SuccessResponse.<ProfileResponse>builder()
                 .code(status.value())
                 .message("Profile retrieved successfully")
                 .data(profile)
