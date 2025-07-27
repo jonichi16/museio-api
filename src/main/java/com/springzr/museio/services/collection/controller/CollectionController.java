@@ -67,7 +67,7 @@ public class CollectionController {
     /**
      * Create collection.
      */
-    @PostMapping("/collection")
+    @PostMapping("/collections")
     public ResponseEntity<CollectionPostResponse> createCollection(
             @Valid @RequestBody CollectionRequest request) {
         try {
