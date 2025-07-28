@@ -17,24 +17,4 @@
     <changeSet id="1.0.1-tag" author="jonichi">
         <tagDatabase tag="1.0.1-tag" />
     </changeSet>
-    <changeSet id="1.0.2" author="jonichi">
-        <addColumn tableName="profile">
-            <column name="profile_picture_id" type="VARCHAR(255)">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
-    </changeSet>
-    <changeSet id="1.0.2-tag" author="jonichi">
-        <tagDatabase tag="1.0.2-tag" />
-    </changeSet>
-    <changeSet id="1.0.3" author="jonichi">
-        <addColumn tableName="art">
-            <column name="image_id" type="VARCHAR(255)">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
-    </changeSet>
-    <changeSet id="1.0.3-tag" author="jonichi">
-        <tagDatabase tag="1.0.3-tag" />
-    </changeSet>
 </databaseChangeLog>

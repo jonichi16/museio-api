@@ -8,7 +8,7 @@ import lombok.Builder;
  * Response for /api/auth/token endpoint.
  *
  * @param accessToken jwt token
- * @param bearerType type of bearer to be used for header
+ * @param bearerType type of bearer to be use for header
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder

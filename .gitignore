@@ -35,4 +35,3 @@ build/
 ### code ###
 .env
 **/liquibase.properties
-/uploads/
