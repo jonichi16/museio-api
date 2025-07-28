@@ -7,6 +7,7 @@ import com.springzr.museio.services.auth.config.MSOAuth2UserService;
 import com.springzr.museio.services.auth.config.OAuth2SuccessHandler;
 import com.springzr.museio.services.auth.config.SecurityConfig;
 import com.springzr.museio.services.auth.model.request.TokenRequest;
+import com.springzr.museio.services.auth.model.response.RegisterResponse;
 import com.springzr.museio.services.auth.model.response.TokenResponse;
 import com.springzr.museio.services.auth.repository.AccountRepository;
 import com.springzr.museio.services.auth.service.AuthService;
@@ -20,12 +21,18 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessRequest;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.preprocessResponse;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.request.RequestDocumentation.formParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -132,6 +139,44 @@ class AuthIntegrationTest {
                         document("tokenUnauthorized",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint())
+                        )
+                );
+    }
+
+    @Test
+    @WithMockUser
+    void register_shouldAddProfileDetailsOfTheAccount() throws Exception {
+        // given
+        MockMultipartFile file = new MockMultipartFile(
+                "profilePicture", "test.jpg", "image/jpg", new byte[1000]
+        );
+        String username = "johndoe";
+        String bio = "This is a sample bio";
+
+        RegisterResponse registerResponse = RegisterResponse.builder()
+                .username(username)
+                .build();
+
+        // when
+        when(authService.register(username, bio, file)).thenReturn(registerResponse);
+
+        // then
+        mockMvc.perform(multipart("/api/auth/register")
+                        .file(file)
+                        .param("username", username)
+                        .param("bio", bio)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andDo(
+                        document("registerSuccess",
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                formParameters(
+                                ),
+                                requestParts(
+                                        partWithName("profilePicture").description("The profile picture file")
+                                )
                         )
                 );
     }
