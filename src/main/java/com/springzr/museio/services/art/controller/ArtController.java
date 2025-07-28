@@ -34,7 +34,7 @@ public class ArtController {
      *      and bearer type
      */
     @GetMapping("/arts")
-    public ResponseEntity<MSResponse<?>> getArtByCollectionId(
+    public ResponseEntity<MSResponse<ArtGetResponse>> getArtByCollectionId(
             @RequestParam(required = false) Integer collectionId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {

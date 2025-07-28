@@ -4,7 +4,9 @@ import com.springzr.museio.libs.common.dto.MSResponse;
 import com.springzr.museio.services.art.model.Art;
 import com.springzr.museio.services.art.model.response.ArtGetResponse;
 import com.springzr.museio.services.art.model.response.ArtGetResponse.Pagination;
+import com.springzr.museio.services.art.model.response.ArtResponse;
 import com.springzr.museio.services.art.service.ArtService;
+import com.springzr.museio.services.tag.model.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,18 +41,24 @@ class ArtControllerTest {
         int page = 1;
         int size = 10;
 
+        List<Tag> tags = List.of(new Tag("drawing"));
+
         List<Art> mockArts = List.of(
-                Art.builder().id(1L).title("Art 1").description("Desc 1").imageUrl("url1").tags("street").build(),
-                Art.builder().id(2L).title("Art 2").description("Desc 2").imageUrl("url2").tags("street").build()
+                Art.builder().id(1L).title("Art 1").description("Desc 1").imageUrl("url1").tags(tags).build(),
+                Art.builder().id(2L).title("Art 2").description("Desc 2").imageUrl("url2").tags(tags).build()
         );
 
+        List<ArtResponse> mockArtResponses = mockArts.stream()
+                .map(ArtResponse::fromEntity)
+                .toList();
+
         Pagination pagination = new Pagination(size, page, 2L, 1);
-        ArtGetResponse mockResponse = new ArtGetResponse(mockArts, pagination);
+        ArtGetResponse mockResponse = new ArtGetResponse(mockArtResponses, pagination);
 
         when(artService.getArtByCollectionId(collectionId, page, size)).thenReturn(mockResponse);
 
         // when
-        ResponseEntity<MSResponse<?>> responseEntity =
+        ResponseEntity<MSResponse<ArtGetResponse>> responseEntity =
                 artController.getArtByCollectionId(collectionId, page, size);
 
         // then
@@ -89,8 +97,8 @@ class ArtControllerTest {
     @Test
     void shouldCreateArtGetResponseCorrectly() {
         // given
-        List<Art> arts = List.of(
-                Art.builder().id(1L).title("Test Art").build()
+        List<ArtResponse> arts = List.of(
+                ArtResponse.fromEntity(Art.builder().id(1L).title("Test Art").tags(List.of()).build())
         );
         Pagination pagination = new Pagination(10, 1, 1, 1);
 
@@ -99,7 +107,7 @@ class ArtControllerTest {
 
         // then
         assertThat(response.arts()).hasSize(1);
-        assertThat(response.arts().get(0).getTitle()).isEqualTo("Test Art");
+        assertThat(response.arts().get(0).title()).isEqualTo("Test Art");
         assertThat(response.pagination().size()).isEqualTo(10);
     }
 }

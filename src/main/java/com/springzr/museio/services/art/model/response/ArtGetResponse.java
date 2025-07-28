@@ -1,6 +1,5 @@
 package com.springzr.museio.services.art.model.response;
 
-import com.springzr.museio.services.art.model.Art;
 import java.util.List;
 import org.springframework.data.domain.Page;
 
@@ -11,7 +10,7 @@ import org.springframework.data.domain.Page;
  * @param arts the list of retrieved arts
  * @param pagination  pagination details such as page size, current page, and total counts
  */
-public record ArtGetResponse(List<Art> arts, Pagination pagination) {
+public record ArtGetResponse(List<ArtResponse> arts, Pagination pagination) {
     /**
      * Encapsulates pagination information for a paginated response.
      *
