@@ -14,9 +14,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
 /**
- * Entity representing a Tag that can be associated with multiple Art entities.
+ * This entity stores basic tag details including id and name.
  */
 @Data
 @Builder
