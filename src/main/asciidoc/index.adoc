@@ -23,3 +23,53 @@ include::{snippets}/tokenBadRequest/response-body.adoc[]
 include::{snippets}/tokenUnauthorized/response-body.adoc[]
 
 '''
+
+=== Register
+`POST /api/auth/register`
+
+Register a new user.
+
+==== Request
+
+include::{snippets}/registerSuccess/form-parameters.adoc[]
+include::{snippets}/registerSuccess/request-parts.adoc[]
+
+==== Success Response
+
+include::{snippets}/registerSuccess/response-body.adoc[]
+
+=== Get Collections by Portfolio
+`GET /api/collections`
+
+Fetch collections based on optional portfolio type, with pagination.
+
+==== Request
+Query parameters:
+- `portfolio` (optional) – e.g., `"PORTFOLIO_VISUAL"`
+- `page` (optional, default: 1)
+- `size` (optional, default: 10)
+
+==== Success Response
+include::{snippets}/getCollectionsByPortfolioSuccess/response-fields.adoc[]
+
+==== Error Response
+Standard error response if something goes wrong.
+
+=== Get User Profile
+`GET /api/auth/{username}`
+
+Retrieve a user profile by their username.
+
+==== Path Parameter
+
+* `username` - The username of the user to retrieve
+
+==== Success Response
+
+include::{snippets}/getUserProfileSuccess/response-body.adoc[]
+
+==== Not Found Response
+
+include::{snippets}/getUserProfileNotFound/response-body.adoc[]
+
+'''
