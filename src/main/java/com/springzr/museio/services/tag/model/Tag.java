@@ -31,8 +31,6 @@ public class Tag {
     @Column(nullable = false, unique = true)
     private String name;
 
-    private int count;
-
     @ManyToMany(mappedBy = "tags")
     private List<Art> arts;
 
@@ -43,17 +41,5 @@ public class Tag {
      */
     public Tag(String name) {
         this.name = name;
-    }
-
-    /**
-     * Constructs a new Tag with the given name,
-     * and the count of appearances of the tag in art_tag table.
-     *
-     * @param name the name of the tag
-     * @param count the count of appearances of the tag in art_tag table
-     */
-    public Tag(String name, int count) {
-        this.name = name;
-        this.count = count;
     }
 }
