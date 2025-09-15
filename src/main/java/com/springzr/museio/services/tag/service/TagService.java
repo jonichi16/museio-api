@@ -1,6 +1,7 @@
 package com.springzr.museio.services.tag.service;
 
 import com.springzr.museio.services.tag.model.Tag;
+import com.springzr.museio.services.tag.model.response.TagCountGetResponse;
 import java.util.List;
 
 /**
@@ -23,4 +24,13 @@ public interface TagService {
      * @return a list of saved or existing Tag objects
      */
     List<Tag> saveTags(List<String> names);
+
+
+    /**
+     * Retrieves a list of tags from the given keyword.
+     *
+     * @param keyword the keyword to search the tags
+     * @return a list of tag objects with the corresponding count from art_tag table
+     */
+    TagCountGetResponse getTagsByKeyword(String keyword, int page, int size);
 }

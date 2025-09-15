@@ -1,10 +1,14 @@
 package com.springzr.museio.services.tag.service.impl;
 
 import com.springzr.museio.services.tag.model.Tag;
+import com.springzr.museio.services.tag.model.response.TagCountGetResponse;
+import com.springzr.museio.services.tag.model.response.TagCountResponse;
 import com.springzr.museio.services.tag.repository.TagRepository;
 import com.springzr.museio.services.tag.service.TagService;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 /**
@@ -50,5 +54,32 @@ public class TagServiceImpl implements TagService {
         return names.stream()
                 .map(this::saveTag)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieves a paginated list of tags based on the provided keyword.
+     *
+     * <p>This method performs keyword sanitization (trims whitespace and removes spaces within
+     * the keyword), then queries the repository to find tags whose names contain the keyword
+     * (supports partial matches). The result includes a list of tags along with their associated
+     * count (number of related arts) and pagination metadata such as page size, current page
+     * number, total elements, and total pages.</p>
+     *
+     * @param keyword the keyword to search tags by; supports slightly misspelled matches.
+     * @param page    the page number to retrieve (1-based index).
+     * @param size    the number of items per page.
+     * @return a {@link TagCountGetResponse} containing list of matched tags and pagination info.
+     */
+    @Override
+    public TagCountGetResponse getTagsByKeyword(String keyword, int page, int size) {
+        PageRequest pageable = PageRequest.of(page - 1, size);
+
+        Page<TagCountResponse> tagPage =
+                tagRepository.searchTagsWithCountFuzzy(keyword, pageable);
+
+        TagCountGetResponse.Pagination pagination =
+                new TagCountGetResponse.Pagination(tagPage);
+
+        return new TagCountGetResponse(tagPage.getContent(), pagination);
     }
 }
