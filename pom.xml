@@ -32,7 +32,7 @@
 		<asciidoctor-maven-plugin.version>3.2.0</asciidoctor-maven-plugin.version>
 		<jacoco-maven-plugin.version>0.8.13</jacoco-maven-plugin.version>
 		<maven-checkstyle-plugin.version>3.6.0</maven-checkstyle-plugin.version>
-		<checkstyle.version>11.0.1</checkstyle.version>
+		<checkstyle.version>12.1.2</checkstyle.version>
 		<spotbugs-maven-plugin.version>4.9.4.2</spotbugs-maven-plugin.version>
 		<spotbugs.version>4.9.3</spotbugs.version>
 		<maven-pmd-plugin.version>3.27.0</maven-pmd-plugin.version>
